@@ -1,6 +1,6 @@
 ---
 name: brag
-description: Memorialize something you just built by generating a self-contained deep-dive "showcase" page for it — what it is, why it's notable, how it works — with a screenshot if one can be found or captured, and links to related showcase pages. Fast by design, like /idea: ask only what's needed, build the page, don't turn it into a project. Triggers on `/brag <subject>`, "brag about this", "make a showcase page for X", "write up what I just did".
+description: Memorialize something you just built by generating a self-contained "showcase" page for it — a persuasive, good-looking deep dive: what it is, why it's impressive, how it works — with a screenshot if one can be found or captured, and links to related showcase pages. This is the sales/hype-leaning counterpart to /write-post (which drafts a neutral, no-BS technical post); reach for /brag when you want it to sell. Fast by design, like /idea: ask only what's needed, build the page, don't turn it into a project. Triggers on `/brag <subject>`, "brag about this", "make a showcase page for X", "write up what I just did".
 user_invocable: true
 args: "<subject> — the thing you're proud of (a feature, fix, trick, or artifact)"
 ---
@@ -52,7 +52,9 @@ hole.
 5. **Build the page.** Write a single self-contained HTML file (inline CSS, no external requests) to
    `<output>/<date>-<slug>.html` with, in order:
    - Title + one-line summary of what it is.
-   - **Why it's notable** — the actual cleverness, stated plainly (no marketing adjectives).
+   - **Why it's impressive** — make the case persuasively; this is a showcase, so it's fine
+     to lead with impact and sell the win. Keep it *true* — every claim must hold up. (For a
+     deliberately neutral technical write-up instead, that's `/write-post`.)
    - **How it works** — the mechanism, with `path:line` or a short code snippet where it helps.
    - The screenshot (or placeholder).
    - **Related** — links to existing showcase pages whose slug/tags overlap this subject (scan the
@@ -69,9 +71,10 @@ hole.
 7. **Confirm and get out of the way.** Print the file path (and URL if deployed), and offer to open
    it. Don't propose follow-up work — the point was to memorialize, not to start a new task.
 
-## Keep it honest
+## Sell it, but keep it true
 
-- Describe what's actually there. If the "clever" part has a caveat or a rough edge, a one-line note
-  beats overselling — this is a record you'll reread, not a sales page.
+- It's a showcase, so lead with impact — but every claim has to hold up. Impressive-and-accurate,
+  never impressive-and-invented. If the clever part has a real caveat, a confident one-line "known
+  limit" reads better than a claim that falls apart on inspection.
 - Read-only except for the showcase files (and a copied screenshot). Never edit the code you're
   bragging about, and never deploy without the explicit offer in step 6.

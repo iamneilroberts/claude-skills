@@ -1,0 +1,11 @@
+{
+  "name": "get-reddit-skill",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Fetch a Reddit post through a real browser session (Playwright), bypassing Reddit's anti-bot block and the closed self-serve API.",
+  "bin": { "get-reddit": "./get-reddit.mjs" },
+  "dependencies": {
+    "playwright": "^1.58.2"
+  }
+}

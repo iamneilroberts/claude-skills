@@ -69,7 +69,11 @@ It lives in three places that reinforce each other:
 | `curate` | Dispatch the read-only `curator` to verify a handoff/session's claims (confabulation check). |
 | `sitrep` | Occasional "state of the union" sweep: what actually shipped vs what handoffs/specs claim, plus loose ends and loss-risk. |
 | `crisp` | Shorter, denser responses on demand. |
-| `brag` | Memorialize something you just built: generate a self-contained deep-dive "showcase" page (what it is, why it's notable, how it works) with a screenshot and links to related pages. Fast, like `/idea`. |
+| `idea` | Capture a fix/feature/research idea fast → a labelled GitHub Issue + a planning doc under `docs/ideas/`. |
+| `fix-issue` | Resolve a GitHub issue end to end: read it, reproduce, fix in an isolated branch with a test, verify, open a PR that closes it. The counterpart to `idea`. |
+| `brag` | Memorialize something you just built as a persuasive "showcase" page (sales/hype leaning) with a screenshot and links to related pages. Fast, like `/idea`. |
+| `write-post` | Draft a neutral, no-BS technical deep-dive post to `docs/posts/` (rich outline by default, `--draft` for prose). The technical counterpart to `brag`. |
+| `get-reddit` | Fetch one public Reddit post + its top comments as clean markdown, by driving a real browser (see note below). |
 | `claude-code-best-practices` | Routes questions to a local mirror of the Claude Code docs. |
 | `evaluate` | Teardown a third-party product/repo from a URL; fan out read-only subagents; decide ADOPT / LIFT / SKIP. |
 | `review-panel` | Multi-model code review (Codex + Gemini + a fresh Claude), merged with a consensus-gated challenge round and a pass/fail exit code. |
@@ -92,6 +96,24 @@ It lives in three places that reinforce each other:
 | `hooks/session-end-handoff.sh` | Write a mechanical handoff on `/clear` so early clears still leave a resume point. |
 
 ---
+
+### A note on `get-reddit` (why a browser, not the API)
+
+Reddit is worth calling out because the obvious approaches don't work anymore:
+
+- **The API path is closed.** Reddit's Responsible Builder Policy (2025) disabled self-serve
+  API-app creation — the "create app" button is zombie functionality, and new apps need a
+  manual pre-approval that's effectively unavailable to solo devs. So the OAuth route is out.
+- **Plain fetch gets a 403.** Reddit returns an anti-bot page to any non-browser client —
+  `.json` endpoints, `old.reddit.com`, UA spoofing, and reader proxies all fail, from both
+  datacenter and residential IPs.
+
+The one path left is a **real browser session**: `get-reddit` launches Chromium (via Playwright),
+parks on the post to warm the session, then does an in-page same-origin fetch of the post JSON —
+the browser carries the cookies and headers Node's fetch can't replicate. No Reddit login or API
+key needed. Playwright and its Chromium binary auto-install on first run; `node_modules/` and the
+browser profile are gitignored, so only the small source (`get-reddit.sh`, `get-reddit.mjs`,
+`package.json`) is tracked here.
 
 ## Install
 
