@@ -54,42 +54,42 @@ It lives in three places that reinforce each other:
 ### Skills (`~/.claude/skills/`)
 | Skill | What it does |
 |---|---|
-| `session-start` | Begin a session; set up the per-session log. |
-| `session-end` | Wrap up: **self-critique**, optional curator verification, prepend a `SESSION_LOG.md` entry. |
-| `handoff` | Write a rich `pause-*.md` handoff (checklist, decisions, self-critique, verbatim-id "coordinate closet") that a fresh session can resume from. |
-| `session-pause` | Manually generate a handoff (the lightweight sibling of `/handoff`). |
-| `session-resume` | Find and load the newest handoff to resume work in place. |
-| `pickup` | Resume the newest handoff **in an isolated worktree** (orchestrates `branch` + `session-resume`). |
-| `branch` | Create an isolated git worktree + a shared out-of-tree work journal, so parallel Claude sessions don't clobber each other's HEAD or WIP. |
-| `curate` | Dispatch the read-only `curator` to verify a handoff/session's claims (confabulation check). |
-| `sitrep` | Occasional "state of the union" sweep: what actually shipped vs what handoffs/specs claim, plus loose ends and loss-risk. |
-| `crisp` | Shorter, denser responses on demand. |
-| `idea` | Capture a fix/feature/research idea fast → a labelled GitHub Issue + a planning doc under `docs/ideas/`. |
-| `fix-issue` | Resolve a GitHub issue end to end: read it, reproduce, fix in an isolated branch with a test, verify, open a PR that closes it. The counterpart to `idea`. |
-| `brag` | Memorialize something you just built as a persuasive "showcase" page (sales/hype leaning) with a screenshot and links to related pages. Fast, like `/idea`. |
-| `write-post` | Draft a neutral, no-BS technical deep-dive post to `docs/posts/` (rich outline by default, `--draft` for prose). The technical counterpart to `brag`. |
-| `get-reddit` | Fetch one public Reddit post + its top comments as clean markdown, by driving a real browser (see note below). |
-| `claude-code-best-practices` | Routes questions to a local mirror of the Claude Code docs. |
-| `evaluate` | Teardown a third-party product/repo from a URL; fan out read-only subagents; decide ADOPT / LIFT / SKIP. |
-| `review-panel` | Multi-model code review (Codex + Gemini + a fresh Claude), merged with a consensus-gated challenge round and a pass/fail exit code. |
-| `codex-review` | Single-reviewer external pass (Codex) with a structured JSON verdict and mechanical gate. |
-| `gemini-review` | Single-reviewer external pass using the Gemini CLI, presented alongside your own analysis. |
-| `unslop-ui` | Detect and remove the visual tells that make a UI look AI-generated. |
-| `task-observer` | Capture observations during work and turn them into skill improvements. *(third-party — see Attribution)* |
+| [`session-start`](skills/session-start/SKILL.md) | Begin a session; set up the per-session log. |
+| [`session-end`](skills/session-end/SKILL.md) | Wrap up: **self-critique**, optional curator verification, prepend a `SESSION_LOG.md` entry. |
+| [`handoff`](skills/handoff/SKILL.md) | Write a rich `pause-*.md` handoff (checklist, decisions, self-critique, verbatim-id "coordinate closet") that a fresh session can resume from. |
+| [`session-pause`](skills/session-pause/SKILL.md) | Manually generate a handoff (the lightweight sibling of `/handoff`). |
+| [`session-resume`](skills/session-resume/SKILL.md) | Find and load the newest handoff to resume work in place. |
+| [`pickup`](skills/pickup/SKILL.md) | Resume the newest handoff **in an isolated worktree** (orchestrates `branch` + `session-resume`). |
+| [`branch`](skills/branch/SKILL.md) | Create an isolated git worktree + a shared out-of-tree work journal, so parallel Claude sessions don't clobber each other's HEAD or WIP. |
+| [`curate`](skills/curate/SKILL.md) | Dispatch the read-only `curator` to verify a handoff/session's claims (confabulation check). |
+| [`sitrep`](skills/sitrep/SKILL.md) | Occasional "state of the union" sweep: what actually shipped vs what handoffs/specs claim, plus loose ends and loss-risk. |
+| [`crisp`](skills/crisp/SKILL.md) | Shorter, denser responses on demand. |
+| [`idea`](skills/idea/SKILL.md) | Capture a fix/feature/research idea fast → a labelled GitHub Issue + a planning doc under `docs/ideas/`. |
+| [`fix-issue`](skills/fix-issue/SKILL.md) | Resolve a GitHub issue end to end: read it, reproduce, fix in an isolated branch with a test, verify, open a PR that closes it. The counterpart to `idea`. |
+| [`brag`](skills/brag/SKILL.md) | Memorialize something you just built as a persuasive "showcase" page (sales/hype leaning) with a screenshot and links to related pages. Fast, like `/idea`. |
+| [`write-post`](skills/write-post/SKILL.md) | Draft a neutral, no-BS technical deep-dive post to `docs/posts/` (rich outline by default, `--draft` for prose). The technical counterpart to `brag`. |
+| [`get-reddit`](skills/get-reddit/SKILL.md) | Fetch one public Reddit post + its top comments as clean markdown, by driving a real browser (see note below). |
+| [`claude-code-best-practices`](skills/claude-code-best-practices/SKILL.md) | Routes questions to a local mirror of the Claude Code docs. |
+| [`evaluate`](skills/evaluate/SKILL.md) | Teardown a third-party product/repo from a URL; fan out read-only subagents; decide ADOPT / LIFT / SKIP. |
+| [`review-panel`](skills/review-panel/SKILL.md) | Multi-model code review (Codex + Gemini + a fresh Claude), merged with a consensus-gated challenge round and a pass/fail exit code. |
+| [`codex-review`](skills/codex-review/SKILL.md) | Single-reviewer external pass (Codex) with a structured JSON verdict and mechanical gate. |
+| [`gemini-review`](skills/gemini-review/SKILL.md) | Single-reviewer external pass using the Gemini CLI, presented alongside your own analysis. |
+| [`unslop-ui`](skills/unslop-ui/SKILL.md) | Detect and remove the visual tells that make a UI look AI-generated. |
+| [`task-observer`](skills/task-observer/SKILL.md) | Capture observations during work and turn them into skill improvements. *(third-party — see Attribution)* |
 
 ### Agents (`~/.claude/agents/`)
 | Agent | What it does |
 |---|---|
-| `curator` | Read-only verification subagent. Takes claims (or a handoff) and returns VERIFIED / UNVERIFIED / CONTRADICTED per claim, each backed by a real command + output. Never edits or deploys. |
+| [`curator`](agents/curator.md) | Read-only verification subagent. Takes claims (or a handoff) and returns VERIFIED / UNVERIFIED / CONTRADICTED per claim, each backed by a real command + output. Never edits or deploys. |
 
 ### Scripts (`~/.claude/`) and Hooks (optional)
 | File | What it does |
 |---|---|
-| `scripts/resolve-coord-dir.sh` | Resolves the shared out-of-tree coordination dir for a repo (used by `branch`, `pickup`, `session-resume`, `curate`, `sitrep`). Install to `~/.claude/coordination/`. |
-| `scripts/refresh-anthropic-docs.sh` | Mirror the public Claude Code docs locally for `claude-code-best-practices`. |
-| `hooks/auto-resume.sh` | On `/clear`, auto-load the newest `pause-*.md` handoff. |
-| `hooks/session-end-nudge.sh` | After N commits, nudge you to run `/session-end` (or `/handoff`) before `/clear`. |
-| `hooks/session-end-handoff.sh` | Write a mechanical handoff on `/clear` so early clears still leave a resume point. |
+| [`scripts/resolve-coord-dir.sh`](scripts/resolve-coord-dir.sh) | Resolves the shared out-of-tree coordination dir for a repo (used by `branch`, `pickup`, `session-resume`, `curate`, `sitrep`). Install to `~/.claude/coordination/`. |
+| [`scripts/refresh-anthropic-docs.sh`](scripts/refresh-anthropic-docs.sh) | Mirror the public Claude Code docs locally for `claude-code-best-practices`. |
+| [`hooks/auto-resume.sh`](hooks/auto-resume.sh) | On `/clear`, auto-load the newest `pause-*.md` handoff. |
+| [`hooks/session-end-nudge.sh`](hooks/session-end-nudge.sh) | After N commits, nudge you to run `/session-end` (or `/handoff`) before `/clear`. |
+| [`hooks/session-end-handoff.sh`](hooks/session-end-handoff.sh) | Write a mechanical handoff on `/clear` so early clears still leave a resume point. |
 
 ---
 
