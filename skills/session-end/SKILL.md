@@ -34,14 +34,13 @@ git diff --stat $(git rev-parse HEAD~1 2>/dev/null || echo HEAD) 2>/dev/null || 
 
 ## Phase 2 — Session-close self-critique (surface gaps before you log)
 
-**Right-size this to the session — don't manufacture concerns.** For a long-but-simple session
-(few files, nothing risky or irreversible, nothing shipped), a single honest line — "nothing
-shaky; only X was deferred" — is the whole phase. Scale up only when the work was genuinely
-complex, touched risky surfaces (auth / payments / prod / data / deletion), or shipped. The point
-is to catch what got silently skipped or assumed, not to perform diligence.
-(Adapted from the r/ClaudeAI "I end every AI session with two questions" thread.)
+**Right-size it — don't manufacture concerns.** A long-but-simple session (few files, nothing
+risky, nothing shipped) gets one honest line ("nothing shaky; only X was deferred") and you're
+done. Scale up only when the work was complex, touched risky surfaces (auth / payments / prod /
+data / deletion), or shipped. Catch what got silently skipped or assumed — don't perform diligence.
+(From the r/ClaudeAI "I end every AI session with two questions" thread.)
 
-When it's worth the deeper pass, answer as many of these as the session warrants:
+When it's worth the deeper pass, answer as many as the session warrants:
 
 1. **What are you least confident about right now?** List every shaky spot — not one.
 2. **What's the biggest thing being missed about this situation — what might I not realize?**
@@ -53,25 +52,21 @@ When it's worth the deeper pass, answer as many of these as the session warrants
    it.** An uncertainty with no verification step is filler; a real gap comes with a way to check.
 
 **Capture, don't chase.** This is a wrap-up inventory, not a fix-it session — do NOT start fixing
-what it surfaces (that's the rabbit trail to avoid). Route findings instead:
-- Items with a concrete check (from 5) → hand to Phase 3 Curate to verify where cheap.
-- Everything else → **offer the user two capture routes** and do the chosen one: (a) fold it into
-  the **Pending** / **Handoff Notes** (in the Session Summary, below) as an instruction for the
-  next session, or (b) file
-  the notable / standalone ones via `/idea`. Never let a finding evaporate — but never let it
-  derail the current task either.
+what it surfaces. Route findings: items with a concrete check (from 5) → Phase 3 Curate; everything
+else → offer two routes and do the chosen one: (a) fold into the **Pending** / **Handoff Notes**
+below as a next-session instruction, or (b) `/idea` the standalone ones. Never let a finding
+evaporate; never let it derail the current task.
 
-Skip this phase entirely if Phase 1 found nothing meaningful (no files changed, no decisions, no
-commits) — silence is a valid result, not a gap.
+Skip this phase if Phase 1 found nothing meaningful — silence is a valid result, not a gap.
 
 ## Phase 3 — Curate (verify before you log)
 
-If a `curator` agent is available (attempt the dispatch; skip silently if not — it ships in this
-collection as `agents/curator.md`), dispatch it (Agent tool, `subagent_type: curator`) with this
-session's accomplishments from Phase 1. It checks those claims against git/files and read-only
-environment checks, plus the repo's invariants doc (e.g. `LAWS.md`) if any, read-only.
+If a `curator` agent is available (attempt the dispatch, skip silently if not — ships here as
+`agents/curator.md`), dispatch it (Agent tool, `subagent_type: curator`) with Phase 1's
+accomplishments. It checks the claims against git/files, read-only environment checks, and the
+repo's invariants doc (e.g. `LAWS.md`) if any.
 
-Apply the result before writing anything in Phase 4:
+Apply the result before writing Phase 4:
 - Only log a claim as done if it came back **VERIFIED**.
 - A claim that came back **UNVERIFIED** may still be logged, but mark it as unverified in the entry
   (e.g. "deployed (unverified)") — never launder it into a flat assertion.

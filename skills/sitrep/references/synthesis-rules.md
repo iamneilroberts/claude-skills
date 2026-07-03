@@ -1,7 +1,7 @@
 # /sitrep synthesis rules (main thread)
 
 ## 1. Validate digests
-For each lane's returned digest: every claim must have all schema fields. A claim missing fields, or a lane that errored / returned nothing, makes that SOURCE a DATA GAP. Record it; do not invent its contents.
+Every claim must have all schema fields. A lane that errors, returns nothing, or returns a claim missing fields makes that source a DATA GAP — record it, don't invent its contents.
 
 ## 2. Conflict resolution — by claim_type (NOT one global order)
 When two claims share a `subject` but disagree, the winner depends on `claim_type`:

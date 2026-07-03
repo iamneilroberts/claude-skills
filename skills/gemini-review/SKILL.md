@@ -6,7 +6,7 @@ user_invocable: true
 
 # Gemini External Review
 
-You are invoking Gemini CLI (Google's CLI agent) as an external reviewer to get a second opinion.
+Invoke the Gemini CLI (Google's CLI agent) as an external reviewer for a second opinion.
 
 **Arguments:** `$ARGUMENTS`
 
@@ -28,45 +28,32 @@ Parse `$ARGUMENTS` to determine the review focus. If empty, default to `code`.
 
 ## Your Task
 
-1. **Gather Context** - Collect information about the current project:
-   - Read the project's README.md or main documentation if it exists
-   - Run `git status` and `git diff --stat` to see current changes
-   - Run `git diff` to get the actual diff content (limit to reasonable size)
-   - Run `git log --oneline -10` to see recent commits
-   - Identify the main technologies (check package.json, Cargo.toml, pyproject.toml, etc.)
-   - Note the current working directory and project structure
+1. **Gather context:**
+   - Read the project's README or main docs if present.
+   - Run `git status`, `git diff --stat`, `git diff` (staged + unstaged; keep it reasonable size),
+     and `git log --oneline -10`.
+   - Identify the stack (package.json, Cargo.toml, pyproject.toml, etc.) and note project structure.
 
-2. **Prepare the Review Request** - Build a prompt for Gemini that includes:
-   - Project name and description
-   - Main technologies/stack
-   - Summary of recent changes (staged and unstaged)
-   - The actual diff or relevant code
-   - The specific review focus determined above
-   - Ask Gemini to act as a senior engineer/reviewer
+2. **Prepare the review request** — build a prompt for Gemini with: project name/description,
+   stack, summary of recent changes, the actual diff/relevant code, the review focus, and an
+   instruction to act as a senior engineer/reviewer.
 
-3. **Execute Gemini Review** - Run Gemini in plan (read-only) mode:
+3. **Execute the review** in plan (read-only) mode:
    ```bash
    gemini --approval-mode plan -o text -p "PROMPT_HERE"
    ```
+   Flags: `--approval-mode plan` = read-only, no file modifications · `-o text` = plain text
+   output (cleanest to parse) · `-p` = non-interactive prompt mode.
 
-   Notes on Gemini CLI flags:
-   - `--approval-mode plan` — read-only mode, no file modifications
-   - `-o text` — plain text output (cleanest for parsing)
-   - `-p` — non-interactive prompt mode
-
-4. **Present Results** - After getting Gemini's response:
-   - Summarize the key findings
-   - Highlight critical issues or concerns
-   - Note any disagreements you have with Gemini's assessment
-   - Provide your own analysis of whether their suggestions are valid
-   - Ask the user if they want to act on any of the suggestions
+4. **Present results** — summarize key findings, highlight critical issues, note any
+   disagreements with Gemini's assessment, give your own take on whether the suggestions are
+   valid, and ask the user if they want to act on any of them.
 
 ## Important Notes
 
-- Always use `--approval-mode plan` for safety (read-only)
-- If the diff is very large, summarize key changes instead of including everything
-- Present both Gemini's opinion AND your own analysis
-- Be honest if you disagree with Gemini's assessment
+- Always use `--approval-mode plan` — read-only, no exceptions.
+- If the diff is very large, summarize key changes instead of including everything.
+- Present both Gemini's opinion and your own analysis; say so if you disagree.
 
 ## Prompt Template
 

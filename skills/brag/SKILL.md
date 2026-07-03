@@ -7,10 +7,8 @@ args: "<subject> — the thing you're proud of (a feature, fix, trick, or artifa
 
 # /brag — memorialize something clever, fast
 
-You reach for this in the moment you think "that came out well" and want it recorded before you
-move on. It builds one deep-dive page about the subject and links it into a running showcase index.
-Treat it like `/idea`: capture quickly, ask only when genuinely blocked, never spiral into a rabbit
-hole.
+Builds one deep-dive showcase page about the subject and links it into a running index. Treat it
+like `/idea`: capture quickly, ask only when blocked, never spiral into a rabbit hole.
 
 ## Output location (resolve once, up front)
 
@@ -25,11 +23,10 @@ hole.
 1. **Take the subject.** `<subject>` is the thing being bragged about. Infer a short `slug`
    (kebab-case) and a working title from it.
 
-2. **Clarify only if needed (0–2 questions, then stop).** Ask a question only when you can't build a
-   good page without the answer. Good reasons to ask: you can't tell *what makes it notable*, or
-   *where the relevant code/artifact lives*, or *who the page is for* (a teammate vs. a public
-   demo — changes how much you explain). If the subject + repo context already answer these, skip
-   straight to building. Do not interview the user for polish.
+2. **Clarify only if needed (0–2 questions, then stop).** Ask only when you can't build a good page
+   without the answer — e.g. what makes it notable, where the code/artifact lives, or who it's for
+   (a teammate vs. a public demo). Skip straight to building if context already answers these. Don't
+   interview for polish.
 
 3. **Gather the substance (read-only, quick).** Pull the concrete details the page needs:
    - `git log --oneline -10` and `git diff --stat` (and `git show` on the relevant commit) to see
@@ -41,40 +38,38 @@ hole.
 4. **Handle the screenshot.** A showcase page wants one visual.
    - Look for an existing image tied to the subject: a recent file under `screenshots/`, `docs/`,
      `assets/`, or the repo's image dirs; an artifact the work just produced.
-   - If the subject is a running UI and you can drive a browser (e.g. a screenshot/devtools tool is
-     available) **and** you know the URL, offer to capture one.
-   - Otherwise, ask the user to drop an image in and give you the path — but don't block on it: if
-     they decline, build the page with a captioned placeholder and note that a screenshot can be
-     added later.
+   - If the subject is a running UI, a browser tool is available, and you know the URL, offer to
+     capture one.
+   - Otherwise ask for an image path, but don't block on it — use a captioned placeholder and note
+     a screenshot can be added later.
    - Copy any image into the showcase dir (e.g. `showcase/assets/<slug>.<ext>`) and reference it
      relatively — never hotlink an external or local absolute path.
 
 5. **Build the page.** Write a single self-contained HTML file (inline CSS, no external requests) to
-   `<output>/<date>-<slug>.html` with, in order:
+   `<output>/<date>-<slug>.html`, in order:
    - Title + one-line summary of what it is.
-   - **Why it's impressive** — make the case persuasively; this is a showcase, so it's fine
-     to lead with impact and sell the win. Keep it *true* — every claim must hold up. (For a
-     deliberately neutral technical write-up instead, that's `/write-post`.)
+   - **Why it's impressive** — sell the win; this is a showcase. Keep it *true* — every claim must
+     hold up. (For a deliberately neutral technical write-up instead, that's `/write-post`.)
    - **How it works** — the mechanism, with `path:line` or a short code snippet where it helps.
    - The screenshot (or placeholder).
-   - **Related** — links to existing showcase pages whose slug/tags overlap this subject (scan the
-     index; link 1–3 genuinely related ones, skip the section if none).
+   - **Related** — 1–3 existing showcase pages whose slug/tags genuinely overlap this subject (scan
+     the index; skip the section if none).
    - A small footer: date, and the commit SHA it describes if there is one.
    Then update `<output>/index.html`: add/refresh this page's card (title, date, one-liner, thumb),
    newest first. Create the index if it doesn't exist.
 
-6. **Offer to publish (optional, never automatic).** If — and only if — the project has a configured
-   way to publish the showcase (a deploy script, a `SHOWCASE_DEPLOY_CMD`, a publish skill like a
-   `/mock`-style HTTP PUT), offer to run it and show the resulting URL. If there's no configured
-   target, say the page is local and stop. Do not invent a deploy path or push anywhere unprompted.
+6. **Offer to publish (optional, never automatic).** If the project has a configured way to publish
+   the showcase (a deploy script, a `SHOWCASE_DEPLOY_CMD`, a publish skill like a `/mock`-style HTTP
+   PUT), offer to run it and show the resulting URL. Otherwise say the page is local and stop. Do
+   not invent a deploy path or push anywhere unprompted.
 
-7. **Confirm and get out of the way.** Print the file path (and URL if deployed), and offer to open
-   it. Don't propose follow-up work — the point was to memorialize, not to start a new task.
+7. **Confirm and get out of the way.** Print the file path (and URL if deployed), offer to open it.
+   Don't propose follow-up work — the point was to memorialize, not to start a new task.
 
 ## Sell it, but keep it true
 
-- It's a showcase, so lead with impact — but every claim has to hold up. Impressive-and-accurate,
-  never impressive-and-invented. If the clever part has a real caveat, a confident one-line "known
-  limit" reads better than a claim that falls apart on inspection.
+- Lead with impact — but every claim has to hold up. Impressive-and-accurate, never
+  impressive-and-invented. If the clever part has a real caveat, a confident one-line "known limit"
+  reads better than a claim that falls apart on inspection.
 - Read-only except for the showcase files (and a copied screenshot). Never edit the code you're
   bragging about, and never deploy without the explicit offer in step 6.

@@ -17,15 +17,15 @@ Generate a detailed handoff file so a fresh session can pick up seamlessly.
    - `git diff --stat`
    - `git log --oneline -5`
 
-2. **Summarize from session memory** — write these sections from what you know:
-   - **What Was Accomplished**: list of completed tasks with file paths
+2. **Summarize from session memory** — write these sections:
+   - **What Was Accomplished**: completed tasks with file paths
    - **Decisions Made**: key decisions with rationale
-   - **Files Created or Modified**: table with file path, action, and description
+   - **Files Created or Modified**: table with file path, action, description
    - **Remaining Work**: actionable next steps with specific file paths
-   - **Open Questions**: anything that needs user input
+   - **Open Questions**: anything needing user input
 
 3. **Determine output path**:
-   - Use the repo root from `git rev-parse --show-toplevel` as the base directory (this automatically resolves to the worktree root when inside a worktree)
+   - Use the repo root from `git rev-parse --show-toplevel` as the base directory (resolves to the worktree root when inside a worktree)
    - If `docs/summaries/` exists under that base, write there
    - Otherwise create `.claude-sessions/` under that base
    - Filename: `pause-{YYYY-MM-DD}-{topic-slug}.md` where topic-slug is a 2-3 word summary of the work
@@ -77,9 +77,9 @@ Continue the work from this session. Start with the Remaining Work section.
 Review git state to confirm nothing has changed since the handoff.
 ```
 
-4.5. **Curate the handoff** — if a `curator` agent is available (check by attempting the dispatch; skip silently if not — it ships in this collection as `agents/curator.md`). Dispatch the `curator` subagent (Agent tool, `subagent_type: curator`) with the handoff file path you just wrote. It verifies the handoff's factual claims against git/files/read-only environment checks and against the repo's invariants doc, if any. Append the returned report to the handoff file under a `## Curator Verification` heading (atomic write). This makes the *next* session pick up a handoff whose claims have already been checked — the point is to catch confabulation at the moment it's recorded, not after it's trusted.
+4.5. **Curate the handoff.** If a `curator` agent is available (ships in this collection as `agents/curator.md`; check by attempting the dispatch, skip silently if not), dispatch it (Agent tool, `subagent_type: curator`) with the handoff file path. It verifies the handoff's claims against git/files/read-only checks and the repo's invariants doc, if any. Append its report to the handoff file under `## Curator Verification` (atomic write) — this catches confabulation before the next session trusts it.
 
-5. **Warn about uncommitted changes** if `git status --short` shows any output. **If the curator returned any CONTRADICTED claim, say so prominently here** — those are handoff statements that did not survive verification and must not be trusted by the next session as-is.
+5. **Warn about uncommitted changes** if `git status --short` shows output. If the curator returned a CONTRADICTED claim, flag it prominently — the next session must not trust it as-is.
 
 6. **Tell the user**: "Handoff saved to `{path}`. Type `/clear` to continue — if the `auto-resume.sh` hook is installed it loads automatically, otherwise run `/session-resume`."
    - If inside a worktree, also mention: "Note: this handoff is in the worktree. `/session-resume` will find it and switch back into the worktree automatically."

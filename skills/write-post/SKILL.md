@@ -15,27 +15,24 @@ user_invocable: true
 
 # write-post — brief → interview → rich-outline draft
 
-You rewrite everything into your own voice, so the job is NOT to produce polished prose.
-It is to produce a **dense, well-structured, factually-grounded skeleton** you can rewrite
-fast: the right sections, the real claims with evidence under each, the links and code
-refs, and explicit markers where facts still need checking.
+You rewrite everything into your own voice — the job here is a **dense,
+factually-grounded skeleton**, not polished prose: right sections, real claims with
+evidence, links and code refs, and explicit markers where facts still need checking.
 
 ## Workflow
 
 ### 1. Read the brief
-Parse what you were given as args. If it's one line ("deep dive on the latest MCP Apps
-features"), that's the seed — the interview fills the rest. Don't assume; ask.
+Parse the args. A one-liner ("deep dive on the latest MCP Apps features") is just the
+seed — the interview fills the rest.
 
-### 2. Gather sources BEFORE interviewing (so questions are specific, not generic)
-Spend a little effort grounding yourself so the interview is informed:
+### 2. Gather sources before interviewing (so questions are specific, not generic)
 - Relevant code/docs in this repo (grep, read the specific files).
-- Any local documentation mirrors you keep (e.g. a docs mirror under `~/.claude/`), plus
-  the project's own docs, for the topic at hand.
-- Any notes/memory you keep about prior decisions and what has already shipped.
+- Any local documentation mirrors you keep, plus the project's own docs for the topic.
+- Any notes/memory on prior decisions and what's already shipped.
 - Use a subagent for heavy reading; keep only the facts in this thread.
-Bring 2–4 concrete things you learned into the interview ("the release notes list X, Y, Z
-as new — which of these is the post about?"). Cross-check claims against the actual
-code/spec; don't relay lore.
+Bring 2–4 concrete findings into the interview ("the release notes list X, Y, Z as new —
+which of these is the post about?"). Cross-check claims against the actual code/spec;
+don't relay lore.
 
 ### 3. Interview (short, focused, conversational)
 Ask in prose, not a wall of separate question widgets — one tight round, grouped, with a
@@ -72,9 +69,8 @@ Default = **rich outline**. Write to `docs/posts/<YYYY-MM-DD>-<slug>.md`. Shape:
 `--outline` → force outline even if `--draft` is a habit.
 
 ### 5. Hand off
-Print the path, a one-paragraph summary of the angle, and the list of `[VERIFY]` /
-`[NEEDS]` markers so it's clear exactly what's load-bearing-but-unconfirmed. Don't commit
-unless asked.
+Print the path, a one-paragraph summary of the angle, and the `[VERIFY]` / `[NEEDS]`
+markers — what's load-bearing-but-unconfirmed. Don't commit unless asked.
 
 ## Writing rules (apply to every word, outline or draft)
 

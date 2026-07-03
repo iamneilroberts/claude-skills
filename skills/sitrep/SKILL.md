@@ -6,11 +6,11 @@ user_invocable: true
 
 # /sitrep — state of the union re-orientation
 
-> **Optional integrations** (all degrade gracefully — the sweep still runs without them): a `curator` verification subagent (see `agents/curator.md` in this collection) for escalated claims; a session-history MCP and a memory MCP for the historical lane; a `docs/roadmap/MILESTONES.md` for milestone anchoring; sibling skills `/pm` and `/focus`. If you don't have one, that step is skipped and noted as a DATA GAP rather than failing.
+> **Optional integrations** (each missing one degrades to a noted DATA GAP, never a failure): a `curator` verification subagent (see `agents/curator.md` in this collection) for escalated claims; a session-history MCP and a memory MCP for the historical lane; a `docs/roadmap/MILESTONES.md` for milestone anchoring; sibling skills `/pm` and `/focus`.
 
 Occasional deep sweep. Three jobs: verify shipped-vs-claimed, surface loose ends / loss-risk (unpushed commits, stale worktrees, unchecked plans, unclosed handoffs), and reset what's next. Read-only except for the report file it writes; the MILESTONES.md change is PROPOSED, never applied.
 
-If you also run a `/pm`-style live board (not included here): that's the daily at-a-glance of in-progress work; `/sitrep` is periodic truth-reconciliation. The loose-ends/at-risk section is loss-risk & staleness reconciliation, not a live board.
+`/pm`-style live boards are the daily at-a-glance; `/sitrep` is periodic truth-reconciliation, and its loose-ends/at-risk section is loss-risk & staleness reconciliation, not a live board.
 
 ## Step 1 — Args + window
 `/sitrep` takes no required args. Determine the git/since window: read the newest prior `docs/digests/*-sitrep.md`; if found, window = its date → today; else default 14 days. Pass the window string (e.g. `14 days ago` or `2026-05-14`) to the backbone lane.
@@ -24,7 +24,7 @@ In a single message, dispatch two general-purpose subagents (Agent tool, no suba
 Read `~/.claude/skills/sitrep/references/synthesis-rules.md` §1. For each lane: confirm schema completeness; mark missing/errored sources as DATA GAPs.
 
 ## Step 4 — Synthesize
-Per synthesis-rules.md §2–§4: group claims by subject, resolve conflicts by claim_type + freshness gate, compute the escalation score, dispatch the `curator` subagent for claims scoring ≥3, fold verdicts back. Route `loose-end` claims into section 2 (rank Loss-risk → Stale → Unfinished); a `loose-end` is a direct git/fs fact so it rarely escalates, but DO curator-check any loose-end that contradicts a `shipped` claim (e.g. a handoff says "shipped" but the commits are unpushed). Determine INCOMPLETE SWEEP if any backbone source is a gap.
+Per synthesis-rules.md §2–§4: group claims by subject, resolve conflicts by claim_type + freshness gate, compute the escalation score, dispatch the `curator` subagent for claims scoring ≥3, fold verdicts back. Route `loose-end` claims into section 2 (rank Loss-risk → Stale → Unfinished); a loose-end is a direct git/fs fact and rarely escalates, but curator-check any that contradicts a `shipped` claim (e.g. handoff says "shipped" but commits are unpushed). Determine INCOMPLETE SWEEP if any backbone source is a gap.
 
 ## Step 5 — Write report + terminal summary
 Write `docs/digests/YYYY-MM-DD-sitrep.md` (overwrite if it exists) using the template below. Then print a terminal summary: status (OK / INCOMPLETE SWEEP), CONTRADICTED count, loss-risk count (loose-ends in the Loss-risk bucket), the single top next-action, and the report path. Do not paste the full report into chat.

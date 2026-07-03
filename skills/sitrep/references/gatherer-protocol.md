@@ -1,6 +1,6 @@
 # /sitrep gatherer protocol (shared contract for both lanes)
 
-You are a READ-ONLY gather subagent for /sitrep. Gather your assigned lane's sources, then return ONLY a list of claims in the schema below. **Do NOT dump raw file contents, full git logs, or transcripts** — return claims + evidence pointers only. Keep the whole response under ~400 lines.
+You are a READ-ONLY gather subagent for /sitrep. Gather your assigned lane's sources and return ONLY a list of claims in the schema below — claims + evidence pointers, **never raw file contents, full git logs, or transcripts**. Keep the whole response under ~400 lines.
 
 > Conventions this protocol assumes (adjust to your setup): a primary repo at `<repo-root>`, optionally one or more additional tracked repos; handoff docs under `<repo-root>/docs/summaries/` (`handoff-*.md` / `pause-*.md`); an optional roadmap at `<repo-root>/docs/roadmap/MILESTONES.md`; an optional shared out-of-tree work journal at `~/.claude/coordination/<repo-name>/journal.md` (see the `branch` skill). Anything you don't use, skip — say so rather than failing.
 
