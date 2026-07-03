@@ -133,42 +133,21 @@ Remaining Work and ask whether to continue or do something else.
 
 ## Coordinate Closet — the trailing-block rule
 
-Prose is lossy: when a section gets summarized, exact identifiers (SHAs, KV
-ids, ports, absolute paths, PR/issue refs) are the first thing to evaporate —
-and they're exactly what the resuming session needs to act without re-deriving.
-The Coordinate Closet is a deterministic safety net that conserves them verbatim
-regardless of how the narrative compresses.
+Prose summaries drop exact identifiers (SHAs, KV ids, ports, absolute paths, PR/issue refs) first —
+and those are what the next session needs to act without re-deriving. The closet conserves them
+verbatim. Scrape this session's transcript for carry-worthy literals; list them newest-first, deduped:
 
-Build it by scraping THIS session's transcript (your own tool results +
-assistant text, plus operator-pasted values) for carry-worthy literals:
+- **Nominate** (id-shaped wins under a cap): UUIDs → hex ids ≥12 → short mixed-hex 8–11 (must hold ≥1
+  letter AND ≥1 digit, so `20260610` and `deadbeef` are skipped) → absolute paths → `key=value` pairs
+  whose value has a digit/`/`/`@` → issue refs `#1234`.
+- **Label opaque ids** with their nearest key/subject (`"changelog_id":"7fd5835b"` →
+  `7fd5835b (changelog_id)`); self-describing values (paths, `#refs`) need none.
 
-- **What to nominate**, in priority order (id-shaped wins under any cap):
-  UUIDs → hex ids ≥12 → short mixed-hex 8–11 (`b602c1e8`, `rail-1f6be5b4`:
-  must hold ≥1 letter AND ≥1 digit, so dates like `20260610` and hex-words like
-  `deadbeef` are skipped) → absolute paths → `key=value`/`key: value` pairs
-  whose value bears a digit/`/`/`@` (`port=3002`, drop prose like
-  `mode=continuous`) → issue refs `#1234`.
-- **Newest-first, deduped** (boundary-aware: `6787` is NOT covered by `67870`).
-- **Label opaque ids** (bare UUID/hex) with their nearest preceding key or
-  prose subject — `"changelog_id":"7fd5835b"` → `7fd5835b (changelog_id)`,
-  `commit b602c1e8` → `b602c1e8 (commit)`. Self-describing values (paths, KV
-  pairs, `#refs`) need no label. Never let one hash label another.
+Mirrors a verbatim-id-scraping algorithm from context-warp-drive (MIT), applied here by hand.
 
-This mirrors a small verbatim-identifier-scraping algorithm from context-warp-drive (MIT); here
-it's applied by hand to the session trace rather than in code.
+## Length budget (only when a hard size cap is set)
 
-## Length budget (optional — only when a hard size cap is set)
-
-If a handoff must fit a byte/char cap, don't truncate top-to-bottom (that
-starves whatever's last). Instead split **fill order** from **display order**:
-
-- **Fill** sections in IMPORTANCE order — Coordinate Closet and Checklist
-  first (never drop the lossless data), then Remaining Work, Decisions, the
-  rest — each section capped at its own share of the budget.
-- **Display** them in READING order (the template order above), so the doc
-  still reads top-to-bottom.
-- When a section overflows its cap, **truncate the middle**, not the tail:
-  keep ~58% head + ~42% tail joined by a `…[N chars omitted]…` marker, so both
-  the opening context and the closing state survive.
-
-Without a cap, skip this entirely — write every section in full.
+If the handoff must fit a byte cap: **fill** sections in importance order (Coordinate Closet +
+Checklist first — never drop the lossless data — then Remaining Work, Decisions, the rest), but
+**display** them in template order. When a section overflows, truncate the *middle* (keep ~58% head
++ ~42% tail joined by `…[N omitted]…`), not the tail. No cap → write every section in full.
