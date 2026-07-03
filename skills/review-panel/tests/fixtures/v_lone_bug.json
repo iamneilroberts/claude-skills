@@ -1,0 +1,1 @@
+{"overall_correctness":"minor_issues","findings":[{"priority":1,"title":"Missing null check on session","code_location":"src/auth.py:88","body":"session may be None after logout."}],"_model":"codex"}

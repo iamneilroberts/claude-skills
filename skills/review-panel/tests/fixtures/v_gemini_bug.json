@@ -1,0 +1,1 @@
+{"overall_correctness":"incorrect","findings":[{"priority":0,"title":"SQL Injection - user lookup","code_location":"src/db.py:42","body":"Query built via string interpolation."}],"_model":"gemini"}

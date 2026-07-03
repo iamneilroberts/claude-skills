@@ -1,0 +1,1 @@
+{"overall_correctness":"incorrect","findings":[{"priority":0,"title":"SQL injection in user lookup","code_location":"src/db.py:42","body":"Unsanitized f-string in query; attacker controls id."}],"_model":"codex"}

@@ -1,0 +1,1 @@
+{"overall_correctness":"incorrect","findings":[{"priority":0,"title":"Access check unconditionally authorizes","code_location":"rp_sample.js:3","body":"authorized hardcoded true."}],"_model":"codex"}

@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "codex-review verdict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["overall_correctness", "findings"],
+  "properties": {
+    "overall_correctness": {
+      "type": "string",
+      "enum": ["correct", "minor_issues", "incorrect", "cannot_determine"],
+      "description": "Single summary judgment of the change/plan under review."
+    },
+    "findings": {
+      "type": "array",
+      "description": "Every problem found, one entry each. Empty array means nothing found.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["priority", "title", "body"],
+        "properties": {
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 3,
+            "description": "0=CRITICAL (correctness/security, must fix) 1=IMPORTANT (real bug or risk) 2=MINOR (should fix) 3=NIT (style/advisory)"
+          },
+          "title": { "type": "string", "description": "One-line summary of the problem." },
+          "code_location": { "type": "string", "description": "file:line the finding anchors to, or empty if N/A." },
+          "body": { "type": "string", "description": "What is wrong and why; concrete failure scenario." }
+        }
+      }
+    },
+    "notes": { "type": "string", "description": "Optional overall remark (e.g. 'nothing critical')." }
+  }
+}

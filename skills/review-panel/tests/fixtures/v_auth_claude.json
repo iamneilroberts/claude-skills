@@ -1,0 +1,1 @@
+{"overall_correctness":"incorrect","findings":[{"priority":0,"title":"checkAccess hardcoded authorization bypass","code_location":"rp_sample.js:4","body":"no real check."}],"_model":"claude"}

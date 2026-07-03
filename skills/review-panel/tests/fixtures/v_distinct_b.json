@@ -1,0 +1,1 @@
+{"overall_correctness":"minor_issues","findings":[{"priority":2,"title":"pct divide by zero","code_location":"rp_sample.js:14","body":"no guard."}],"_model":"gemini"}

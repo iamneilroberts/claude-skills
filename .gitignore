@@ -1,0 +1,10 @@
+# Playwright / node junk (if get-reddit or similar browser skills are added)
+node_modules/
+.profile/
+# Python bytecode
+__pycache__/
+*.pyc
+# Local runtime state that skills produce (never publish real session data)
+skill-observations/
+*.log
+.DS_Store

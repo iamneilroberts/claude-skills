@@ -1,0 +1,1 @@
+{"_challenge_of":"1|src/auth.py:88|missing null check on session","_verdict":"refuted","_model":"gemini","overall_correctness":"correct","findings":[]}

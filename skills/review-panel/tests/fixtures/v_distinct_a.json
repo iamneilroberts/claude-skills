@@ -1,0 +1,1 @@
+{"overall_correctness":"minor_issues","findings":[{"priority":1,"title":"loadConfig not awaited","code_location":"rp_sample.js:9-11","body":"promise parsed."}],"_model":"codex"}
