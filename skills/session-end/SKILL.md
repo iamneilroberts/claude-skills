@@ -15,10 +15,10 @@ Analyze what was accomplished:
 2. Git changes made during the session
 3. Tasks completed vs left open
 
-While doing this, **count three things** (printed in Phase 3):
-- `MEMORY_WRITES` — auto-memory file edits (`~/.claude/projects/*/memory/*.md`) + vestige `*_ingest`/`remember_*`/`set_intention` tool calls made this session
+While doing this, **count three things** (printed in Phase 5):
+- `MEMORY_WRITES` — auto-memory file edits (`~/.claude/projects/*/memory/*.md`) + any memory-MCP save calls made this session
 - `COMMIT_COUNT` — number of `git commit` invocations this session
-- `SESSION_LOG_UPDATED` — true/false depending on whether Phase 2 actually wrote an entry
+- `SESSION_LOG_UPDATED` — true/false depending on whether Phase 4 actually wrote an entry
 
 ```bash
 # Append session marker to the legacy per-session log if one exists
@@ -27,12 +27,12 @@ if [ -f "$SESSION_FILE" ]; then
   printf '\n=== Session Summary ===\nEnded: %s\n\n' "$(date)" >> "$SESSION_FILE"
 fi
 
-# Capture git context for Phase 2
+# Capture git context for Phase 4
 GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || true)
 git diff --stat $(git rev-parse HEAD~1 2>/dev/null || echo HEAD) 2>/dev/null || echo "(no git changes this session)"
 ```
 
-## Phase 1.4 — Session-close self-critique (surface gaps before you log)
+## Phase 2 — Session-close self-critique (surface gaps before you log)
 
 **Right-size this to the session — don't manufacture concerns.** For a long-but-simple session
 (few files, nothing risky or irreversible, nothing shipped), a single honest line — "nothing
@@ -54,22 +54,24 @@ When it's worth the deeper pass, answer as many of these as the session warrants
 
 **Capture, don't chase.** This is a wrap-up inventory, not a fix-it session — do NOT start fixing
 what it surfaces (that's the rabbit trail to avoid). Route findings instead:
-- Items with a concrete check (from 5) → hand to Phase 1.5 Curate to verify where cheap.
+- Items with a concrete check (from 5) → hand to Phase 3 Curate to verify where cheap.
 - Everything else → **offer the user two capture routes** and do the chosen one: (a) fold it into
-  the Phase 2 **Pending** / **Handoff Notes** as an instruction for the next session, or (b) file
+  the **Pending** / **Handoff Notes** (in the Session Summary, below) as an instruction for the
+  next session, or (b) file
   the notable / standalone ones via `/idea`. Never let a finding evaporate — but never let it
   derail the current task either.
 
 Skip this phase entirely if Phase 1 found nothing meaningful (no files changed, no decisions, no
 commits) — silence is a valid result, not a gap.
 
-## Phase 1.5 — Curate (verify before you log)
+## Phase 3 — Curate (verify before you log)
 
-If a `curator` agent is available (attempt the dispatch; skip silently if not), dispatch it
-(Agent tool, `subagent_type: curator`) with this session's accomplishments from Phase 1. It checks
-those claims against git/files/live production and against the repo's `LAWS.md`, read-only.
+If a `curator` agent is available (attempt the dispatch; skip silently if not — it ships in this
+collection as `agents/curator.md`), dispatch it (Agent tool, `subagent_type: curator`) with this
+session's accomplishments from Phase 1. It checks those claims against git/files and read-only
+environment checks, plus the repo's invariants doc (e.g. `LAWS.md`) if any, read-only.
 
-Apply the result before writing anything in Phase 2:
+Apply the result before writing anything in Phase 4:
 - Only log a claim as done if it came back **VERIFIED**.
 - A claim that came back **UNVERIFIED** may still be logged, but mark it as unverified in the entry
   (e.g. "deployed (unverified)") — never launder it into a flat assertion.
@@ -78,7 +80,7 @@ Apply the result before writing anything in Phase 2:
 
 Skip this phase only if Phase 1 found nothing meaningful (no files changed, no decisions, no commits).
 
-## Phase 2 — Prepend a SESSION_LOG.md entry
+## Phase 4 — Prepend a SESSION_LOG.md entry
 
 Determine the log path:
 - Git repo: `$GIT_ROOT/SESSION_LOG.md`
@@ -114,7 +116,7 @@ fi
 rm -f "$ENTRY"
 ```
 
-## Phase 3 — Print the close
+## Phase 5 — Print the close
 
 Two lines exactly, for at-a-glance review and paste:
 
