@@ -6,12 +6,12 @@ user_invocable: true
 
 # Start Coding Session
 
-I'll begin a documented coding session to track progress and maintain context.
+Begin a documented coding session so progress is tracked and context survives a `/clear`.
 
-Creating session record with:
-- Timestamp: Current date/time
-- Git state: Current branch and commit
-- Session goals: What we aim to accomplish
+Create a session record with:
+- Timestamp: current date/time
+- Git state: current branch and commit
+- Session goals: what the session aims to accomplish
 
 ```bash
 SESSION_DIR=".claude-sessions"
@@ -26,9 +26,9 @@ echo "" >> "$SESSION_FILE"
 echo "Goals:" >> "$SESSION_FILE"
 ```
 
-Please tell me:
+Ask the user:
 1. What are we working on today?
-2. What specific goals do you want to accomplish?
-3. Any context I should know about?
+2. What specific goals should this session accomplish?
+3. Any context worth knowing up front?
 
-I'll document these goals and track our progress throughout the session.
+Record those goals in the session file and track progress against them through the session.

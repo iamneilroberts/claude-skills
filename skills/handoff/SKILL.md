@@ -6,7 +6,7 @@ user_invocable: true
 
 # Write Handoff (auto-loaded on next /clear)
 
-I'll write a rich session handoff to the **`pause-*.md` namespace**. If you run the optional
+Write a rich session handoff to the **`pause-*.md` namespace**. If you run the optional
 `hooks/auto-resume.sh` (bundled in this collection), it loads the newest such file automatically on
 your next `/clear`, so the fresh session picks it up with zero effort. Without the hook, resume it
 manually with `/session-resume`.

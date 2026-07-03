@@ -6,16 +6,16 @@ user_invocable: true
 
 # End Coding Session
 
-I'll wrap up this session: persist what we did, prepend a SESSION_LOG entry, and surface a session-rename suggestion.
+Wrap up the session: persist what was done, prepend a SESSION_LOG entry, and surface a session-rename suggestion.
 
 ## Phase 1 — Take stock
 
-Analyze what we accomplished:
+Analyze what was accomplished:
 1. Files created/modified
 2. Git changes made during the session
 3. Tasks completed vs left open
 
-While doing this, **count three things** (I'll print them in Phase 3):
+While doing this, **count three things** (printed in Phase 3):
 - `MEMORY_WRITES` — auto-memory file edits (`~/.claude/projects/*/memory/*.md`) + vestige `*_ingest`/`remember_*`/`set_intention` tool calls made this session
 - `COMMIT_COUNT` — number of `git commit` invocations this session
 - `SESSION_LOG_UPDATED` — true/false depending on whether Phase 2 actually wrote an entry
@@ -89,7 +89,7 @@ Draft a one-block entry — date, short title, 1–2 sentence summary, and a poi
 ```markdown
 ## YYYY-MM-DD — <Short title>
 
-<1–2 sentence summary of what we did and why.>
+<1–2 sentence summary of what was done and why.>
 
 Main artifact: <file path / commit SHA / issue ID / URL>
 ```
