@@ -1,3 +1,9 @@
+---
+name: handoff
+description: Write a rich session handoff to a pause-*.md file — checklist, decisions, files changed, self-critique, and a verbatim-id "coordinate closet" — so a fresh session can resume the work after /clear (via the auto-resume hook, or /session-resume). Use before you /clear with work still in flight. Triggers on `/handoff`, "write a handoff", "snapshot this session so I can resume later".
+user_invocable: true
+---
+
 # Write Handoff (auto-loaded on next /clear)
 
 I'll write a rich session handoff to the **`pause-*.md` namespace**. If you run the optional

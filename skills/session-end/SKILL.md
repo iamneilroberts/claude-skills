@@ -1,3 +1,9 @@
+---
+name: session-end
+description: Wrap up a coding session — run a right-sized end-of-session self-critique, optionally curator-verify the claims, prepend a SESSION_LOG.md entry, and print a rename + counter summary. Use before you /clear or stop for the day. Triggers on `/session-end`, "end this session", "wrap up and log what we did".
+user_invocable: true
+---
+
 # End Coding Session
 
 I'll wrap up this session: persist what we did, prepend a SESSION_LOG entry, and surface a session-rename suggestion.

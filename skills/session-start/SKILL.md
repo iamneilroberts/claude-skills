@@ -1,3 +1,9 @@
+---
+name: session-start
+description: Begin a documented coding session — create a per-session log so progress is tracked and later wrap-up (/session-end) has something to append to. Use at the start of a work session. Triggers on `/session-start`, "start a coding session", "begin a session".
+user_invocable: true
+---
+
 # Start Coding Session
 
 I'll begin a documented coding session to track progress and maintain context.

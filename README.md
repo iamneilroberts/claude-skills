@@ -41,8 +41,8 @@ Two rules keep it from becoming noise:
 
 It lives in three places that reinforce each other:
 
-- [`commands/session-end.md`](commands/session-end.md) — Phase 1.4, the wrap-up self-critique.
-- [`commands/handoff.md`](commands/handoff.md) — the `Self-Critique` section of the handoff doc.
+- [`skills/session-end/`](skills/session-end/) — Phase 1.4, the wrap-up self-critique.
+- [`skills/handoff/`](skills/handoff/) — the `Self-Critique` section of the handoff doc.
 - [`skills/curate/`](skills/curate/) — the mechanized version of the thread's "paste it into a fresh
   chat and ask what it missed" trick: a read-only `curator` subagent checks the session's claims
   against git, files, and the environment before you trust them.
@@ -51,17 +51,12 @@ It lives in three places that reinforce each other:
 
 ## What's inside
 
-### Commands (`~/.claude/commands/`)
-| Command | What it does |
+### Skills (`~/.claude/skills/`)
+| Skill | What it does |
 |---|---|
 | `session-start` | Begin a session; set up the per-session log. |
 | `session-end` | Wrap up: **self-critique**, optional curator verification, prepend a `SESSION_LOG.md` entry. |
 | `handoff` | Write a rich `pause-*.md` handoff (checklist, decisions, self-critique, verbatim-id "coordinate closet") that a fresh session can resume from. |
-| `gemini-review` | Single-reviewer external pass using the Gemini CLI. |
-
-### Skills (`~/.claude/skills/`)
-| Skill | What it does |
-|---|---|
 | `session-pause` | Manually generate a handoff (the lightweight sibling of `/handoff`). |
 | `session-resume` | Find and load the newest handoff to resume work in place. |
 | `pickup` | Resume the newest handoff **in an isolated worktree** (orchestrates `branch` + `session-resume`). |
@@ -78,6 +73,7 @@ It lives in three places that reinforce each other:
 | `evaluate` | Teardown a third-party product/repo from a URL; fan out read-only subagents; decide ADOPT / LIFT / SKIP. |
 | `review-panel` | Multi-model code review (Codex + Gemini + a fresh Claude), merged with a consensus-gated challenge round and a pass/fail exit code. |
 | `codex-review` | Single-reviewer external pass (Codex) with a structured JSON verdict and mechanical gate. |
+| `gemini-review` | Single-reviewer external pass using the Gemini CLI, presented alongside your own analysis. |
 | `unslop-ui` | Detect and remove the visual tells that make a UI look AI-generated. |
 | `task-observer` | Capture observations during work and turn them into skill improvements. *(third-party — see Attribution)* |
 
@@ -120,11 +116,13 @@ browser profile are gitignored, so only the small source (`get-reddit.sh`, `get-
 Everything maps onto Claude Code's standard directories. Copy what you want:
 
 ```
-cp -r commands/*  ~/.claude/commands/
 cp -r skills/*    ~/.claude/skills/
 cp    agents/*    ~/.claude/agents/
 cp    scripts/resolve-coord-dir.sh  ~/.claude/coordination/    # if you use branch/pickup/sitrep
 ```
+
+Every skill here is `user_invocable`, so each is both a `/slash-command` you can type and a skill
+Claude can auto-invoke when your request matches its description.
 
 Hooks are opt-in — wire the ones you want into `~/.claude/settings.json` under the matching event
 (`SessionStart` for `auto-resume.sh`, `Stop` for `session-end-nudge.sh`, `SessionEnd` for

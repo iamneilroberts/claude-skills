@@ -1,3 +1,9 @@
+---
+name: gemini-review
+description: Get a second-opinion review of the current diff (or a chosen focus — architecture, security, docs, design, performance, tests) from the Gemini CLI, then present its findings alongside your own analysis. Single-reviewer counterpart to /codex-review and /review-panel; needs the `gemini` CLI installed. Triggers on `/gemini-review [focus]`, "gemini review this", "get a gemini second opinion on this diff".
+user_invocable: true
+---
+
 # Gemini External Review
 
 You are invoking Gemini CLI (Google's CLI agent) as an external reviewer to get a second opinion.
