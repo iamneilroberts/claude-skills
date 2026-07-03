@@ -126,23 +126,21 @@ For 2+ subagents, invoke `superpowers:dispatching-parallel-agents`.
 
 ### 5. Synthesize the verdict & write the report
 
-The calling session — not a subagent — produces the verdict: only it sees all subsets at
-once and holds the repo's strategic context.
-
-Deliver in chat AND write `docs/evaluations/<date>-<slug>.md`, answering both axes:
+The calling session, not a subagent, produces the verdict — only it sees all subsets at
+once and holds the repo's strategic context. Deliver in chat AND write
+`docs/evaluations/<date>-<slug>.md`, answering both axes:
 
 - **One-line verdict per axis** — *Adopt as-is:* ADOPT AS-IS / TRY IT / SKIP, with the
   install/run path if adopt/try (e.g. `npm i -g X`, "wire MCP endpoint Y", "drop in
   `~/.claude/skills/`"). *Lift:* LIFT / PARTIAL / SKIP.
-- **Why** — 2-4 sentences tied to real wins/blockers (workflow fit for axis 1; runtime/
-  deps/license for axis 2).
+- **Why** — 2-4 sentences tied to real wins/blockers.
 - **Findings table (LIFT)** — feature · value · liftability · effort · blocker, sorted by
   value.
-- **What to lift now** — the concrete shortlist with porting notes.
+- **What to lift now** — concrete shortlist with porting notes.
 - **What to adopt/try as-is** — exact setup step, cost/auth/runtime caveats; offer to
   install/wire it.
-- **What to park** — good ideas not a fit today but findable later (pointer in the
-  roadmap/ADR area, or `/idea`). Often the most valuable output — capture the pattern even
+- **What to park** — good ideas not a fit today but findable later (pointer in
+  roadmap/ADR, or `/idea`) — often the most valuable output, capturing the pattern even
   when the code doesn't port.
 - **What to skip & why.**
 
@@ -152,19 +150,19 @@ combination clear. Closed-source → note no code was reviewed; axis 1 still app
 ## Scaling
 
 Default is the `Agent`-tool fan-out above, no opt-in needed. For a very large codebase, or
-on explicit request for a workflow/"ultracode", use a `Workflow` pipeline:
-`pipeline(subsets, crawl, verify)` — crawl each subset, then adversarially verify top
+on explicit request for a workflow/"ultracode", use a `Workflow` pipeline —
+`pipeline(subsets, crawl, verify)` — adding a stage that adversarially verifies top
 findings exist as described before they reach the verdict.
 
 ## Guardrails
 
 - **Never execute the clone** — no install/build/run. Findings confirmable only by running
-  code are marked "claimed, unverified," not run to check.
+  are marked "claimed, unverified," not run to check.
 - **License before copy-paste** — no verbatim lifts from GPL/AGPL/unlicensed repos;
   reimplement the pattern instead. MIT/Apache/BSD: reuse fine with attribution.
 - **Don't pollute the repo tree** — clone stays in `/tmp/evaluate/<slug>/`; the only repo
   artifact is the report under `docs/evaluations/`.
 - **Stay honest about fit** — SKIP with one parked idea beats an inflated "adopt"; anchor
-  every finding to a real portability story.
-- **Clean up when done (optional)** — `rm -rf /tmp/evaluate/<slug>` once the report is
-  written, unless the user wants to keep poking at the clone.
+  findings to a real portability story.
+- **Clean up (optional)** — `rm -rf /tmp/evaluate/<slug>` once the report is written,
+  unless the user wants to keep poking at the clone.

@@ -206,9 +206,7 @@ Trigger: `/branch done <slug>`.
 
 Trigger: `/branch update`. Heartbeats the current worktree's Active entry — each invocation bumps `Last update` to now and sets/clears any provided fields.
 
-### 1. Resolve the slug
-
-Use `--slug <slug>` if given. Otherwise infer from the current working dir:
+**Resolve the slug:** use `--slug <slug>` if given, otherwise infer from the current working dir:
 ```bash
 CWD_REPO=$(git rev-parse --show-toplevel)
 # The slug is the branch name of the current worktree
@@ -216,8 +214,7 @@ SLUG=$(git rev-parse --abbrev-ref HEAD)
 ```
 If the slug isn't a `## Active` entry in `$JOURNAL` (e.g. user is on `main`), refuse: "Not on a worktree branch — use `--slug` explicitly or `cd` into the worktree first."
 
-### 2. Field semantics
-
+**Field semantics:**
 - `--working-on "..."` — replaces `Working on:`. Empty string `""` resets to `(idle)`.
 - `--state <state>` — sets `State:`, one of `building` / `in-review` / `blocked` / `almost-done` / `stale`. Reject other values with a one-line list of valid states. (`blocked` should usually pair with `--blocked-by`.)
 - `--next "..."` — sets `Next action:` (the paste-to-resume line a cold reader follows). Empty string `""` resets to `(idle)`.
@@ -227,9 +224,7 @@ If the slug isn't a `## Active` entry in `$JOURNAL` (e.g. user is on `main`), re
 
 No field flags given → only `Last update` is bumped (a "still alive" ping).
 
-### 3. Apply the update, and output
-
-Edit the entry in place under `## Active`, fields in canonical order (see Journal schema below). Use `date '+%Y-%m-%d %H:%M'` for the timestamp. Do **not** auto-commit — the journal change goes in the next batch. Then print the updated entry's relevant lines to confirm. One-liner: `Updated <slug>: <field>=<value>. Last update: <timestamp>.`
+**Apply and output:** edit the entry in place under `## Active`, fields in canonical order (see Journal schema below). Use `date '+%Y-%m-%d %H:%M'` for the timestamp. Do **not** auto-commit — the journal change goes in the next batch. Then print the updated entry's relevant lines to confirm. One-liner: `Updated <slug>: <field>=<value>. Last update: <timestamp>.`
 
 ---
 
