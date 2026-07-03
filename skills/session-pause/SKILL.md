@@ -1,6 +1,6 @@
 ---
 name: session-pause
-description: Manually generate a rich session handoff file for clean context transition. Use when context is getting large, switching phases, or before a break.
+description: Write a detailed session handoff file by hand so the next session can pick up where this one left off. Use when the context window is filling up, you're switching phases, or you're stopping for a break.
 user_invocable: true
 ---
 

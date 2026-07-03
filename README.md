@@ -69,6 +69,7 @@ It lives in three places that reinforce each other:
 | `curate` | Dispatch the read-only `curator` to verify a handoff/session's claims (confabulation check). |
 | `sitrep` | Occasional "state of the union" sweep: what actually shipped vs what handoffs/specs claim, plus loose ends and loss-risk. |
 | `crisp` | Shorter, denser responses on demand. |
+| `brag` | Memorialize something you just built: generate a self-contained deep-dive "showcase" page (what it is, why it's notable, how it works) with a screenshot and links to related pages. Fast, like `/idea`. |
 | `claude-code-best-practices` | Routes questions to a local mirror of the Claude Code docs. |
 | `evaluate` | Teardown a third-party product/repo from a URL; fan out read-only subagents; decide ADOPT / LIFT / SKIP. |
 | `review-panel` | Multi-model code review (Codex + Gemini + a fresh Claude), merged with a consensus-gated challenge round and a pass/fail exit code. |
@@ -126,6 +127,8 @@ is absent.
   present; otherwise it falls back to recent handoffs/journal.
 - **Companion skills** — `pickup` needs `branch`; several skills mention `/pm` and `/focus` as
   optional daily drivers (not included here).
+- **A publish target for `brag`** — `brag` writes showcase pages to a local `showcase/` dir by
+  default; it only deploys if you've wired up a publish command, and never automatically.
 
 ---
 

@@ -1,18 +1,16 @@
 ---
 name: codex-review
 description: |
-  Run an INDEPENDENT cross-model (Codex) external review of the current change or an
-  implementation plan, and enforce the verdict mechanically. Codex returns a STRUCTURED
-  JSON verdict (findings with priority 0=CRITICAL/1=IMPORTANT/2=MINOR/3=NIT against
-  sev.schema.json) and the gate script converts it into a pass/fail exit code — so a
-  CRITICAL/IMPORTANT finding is fixed or escalated, never re-litigated by the same model
-  that wrote the code (that would forfeit the cross-vendor independence). Infra failures
-  (rate limit, model reject, empty output) are a distinct outcome and never count as
-  "clean". This is the productized form of the manual `codex exec -s read-only` habit; it
-  supersedes the one-off scripts/codex-review-*.sh. Use after TDD / before a deploy or
-  merge, or to review a plan before execution. Triggers on `/codex-review`,
-  `/codex-review --plan <file>`, `/codex-review --base <ref>`, "run a codex review",
-  "get an external review of this diff", "codex-review this before I ship".
+  Get a second opinion on the current change or a plan from a different model (Codex), and
+  enforce its verdict mechanically. Codex returns a structured JSON verdict — findings
+  scored by priority (0 critical, 1 important, 2 minor, 3 nit) against sev.schema.json — and
+  a gate script turns that into a pass/fail exit code, so a critical or important finding
+  gets fixed or escalated rather than re-argued by the model that wrote the code. Infra
+  failures (rate limit, model reject, empty output) are their own outcome and never count as
+  a clean pass. Use after writing tests, before a deploy or merge, or to review a plan before
+  execution. Triggers on `/codex-review`, `/codex-review --plan <file>`,
+  `/codex-review --base <ref>`, "run a codex review", "get an external review of this diff",
+  "codex-review this before I ship".
 user_invocable: true
 ---
 

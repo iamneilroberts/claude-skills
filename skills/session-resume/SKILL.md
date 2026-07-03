@@ -1,6 +1,6 @@
 ---
 name: session-resume
-description: Manually load a session handoff file to resume previous work. Fallback when auto-resume doesn't apply (new terminal, older handoffs).
+description: Load a session handoff file and resume the work it describes. Use when the auto-resume hook doesn't apply — a new terminal, or an older handoff you want to pick up by hand.
 user_invocable: true
 args: "[date or topic filter]"
 ---

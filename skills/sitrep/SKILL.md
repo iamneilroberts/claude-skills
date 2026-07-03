@@ -1,6 +1,6 @@
 ---
 name: sitrep
-description: Use when the user invokes /sitrep — an occasional "state of the union" re-orientation sweep. Verifies what has actually shipped vs what handoffs/specs/memory/chat-history CLAIM shipped (across git in one or more repos, handoff docs, specs, optional chat-history/memory MCPs, and open issues), surfaces loose ends and loss-risk (unpushed commits, stale/stray worktrees & branches, unchecked plan boxes, never-closed handoff pending sections), then resets what matters next as a milestone-anchored list plus a bounded off-roadmap-drift section. Writes a report to docs/digests/ and proposes (never applies) a roadmap diff. Triggers on /sitrep, "state of play", "what's actually shipped", "what did I leave hanging", "re-orient me on this project".
+description: Use when the user invokes /sitrep — an occasional "state of the union" re-orientation sweep. Verifies what has actually shipped versus what handoffs, specs, memory, and chat history claim shipped (across git in one or more repos, handoff docs, specs, optional chat-history/memory MCPs, and open issues), surfaces loose ends and loss-risk (unpushed commits, stale/stray worktrees & branches, unchecked plan boxes, never-closed handoff pending sections), then resets what matters next as a milestone-anchored list plus a bounded off-roadmap-drift section. Writes a report to docs/digests/ and proposes (never applies) a roadmap diff. Triggers on /sitrep, "state of play", "what's actually shipped", "what did I leave hanging", "re-orient me on this project".
 user_invocable: true
 ---
 

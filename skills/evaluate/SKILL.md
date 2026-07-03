@@ -1,22 +1,20 @@
 ---
 name: evaluate
 description: |
-  Deep-dive a third-party product/tool/library from a single URL and decide, across
-  TWO axes: (1) is the product itself worth ADOPTING AS-IS — installed into your
-  Claude Code workflow (CLI, MCP server, skill, dotfile/tool) or otherwise kept around
-  — and (2) are there FEATURES/CODE worth LIFTING into your current repo. Most
-  evaluations are looking for one of those two wins. Resolves the URL to its source
-  (repo, README, launch post — handles Reddit/paywalled fetch fallbacks), characterizes
-  the product from docs, clones the code locally when open source, then fans out
-  READ-ONLY subagents — each handed a *subset* of the codebase plus this repo's context
-  — to hunt for liftable features with file:line evidence and portability notes. The
-  calling session synthesizes everything into a verdict (ADOPT AS-IS / LIFT / PARTIAL /
-  SKIP) with per-finding analysis, and writes a report to docs/evaluations/. Use for "is
-  this repo/tool worth anything to me?", "should I start using this", competitive
+  Tear down a third-party product/tool/library from a single URL and answer two questions:
+  (1) is the product worth adopting as-is — installed into your Claude Code workflow (a CLI,
+  MCP server, skill, or dotfile) or otherwise kept around — and (2) are there features or
+  code worth lifting into your current repo. Most evaluations are hunting for one of those
+  two wins. It resolves the URL to its source (repo, README, launch post — with Reddit and
+  paywalled-fetch fallbacks), characterizes the product from its docs, clones the code
+  locally when it's open source, then fans out read-only subagents — each handed a subset of
+  the codebase plus your repo's context — to find liftable features with file:line evidence
+  and portability notes. The calling session merges the findings into a verdict (adopt / lift
+  / partial / skip) with per-finding analysis and writes a report to docs/evaluations/. Use
+  for "is this repo worth anything to me?", "should I start using this", competitive
   teardowns, "should we adopt X", "evaluate this Show-HN / r/mcp / Product Hunt link".
-  Triggers on `/evaluate <url>`, "evaluate this product", "deep dive this repo for things
-  we can lift", "is this tool worth using", "teardown <url>", "what can we steal from
-  <project>".
+  Triggers on `/evaluate <url>`, "evaluate this product", "deep dive this repo for things we
+  can lift", "is this tool worth using", "teardown <url>", "what can we steal from <project>".
 user_invocable: true
 args: "<url> (product page, GitHub repo, Reddit/HN post, or launch blog) — optionally followed by a focus hint, e.g. '/evaluate <url> focus: tool-routing'"
 ---
