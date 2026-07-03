@@ -15,39 +15,19 @@ args: "<one-liner describing the fix / feature / research idea> (optional — wi
 
 # /idea — capture a fix/feature/research idea into a tracked issue + planning doc
 
-The front door for "I just thought of something I want to fix / build / look into."
-One fast capture produces: a **GitHub Issue** (the backlog substrate) and a **planning
-doc** at `docs/ideas/<date>-<slug>.md` linked to it. Both are visible to any tool that
-reads `gh issue list` (including the optional `/pm` board).
+Turns "I just thought of something" into a **GitHub Issue** (backlog substrate) plus a linked **planning doc** at `docs/ideas/<date>-<slug>.md`. Files into the current repo (whatever `gh` resolves); tags a milestone only if the repo uses them.
 
-**Scope:** files into the current repo's GitHub Issues (whatever `gh` resolves for the
-working dir) and, optionally, tags a milestone if the repo uses them.
-
-## Operating principle: lean fast
-
-Most ideas should be a 2-tap capture, not a Q&A. **Infer aggressively from the
-one-liner, then show one proposal block and let the user accept all with "y" or
-correct any field.** Only ask a real question for a field you genuinely cannot
-infer. Never block capture on perfection — a thin idea filed beats a rich idea lost.
+**Lean fast:** 2-tap capture, not a Q&A. Infer aggressively, show one proposal block, accept with "y" or correct a field. Only ask what you truly can't infer — a thin idea filed beats a rich idea lost.
 
 ## Steps
 
-1. **Get the one-liner.** If invoked as `/idea <text>`, use it. If bare `/idea`,
-   ask once: "What's the idea? (one line — fix / feature / research)".
-
-2. **Infer & propose.** From the one-liner, derive:
-   - **title** — a clean imperative issue title (e.g. "Cache geocode lookups across requests").
-   - **slug** — kebab-case, ≤ 5 words, no date (e.g. `cache-geocode-lookups`).
-   - **type** — `fix` (bug/defect), `feature` (new capability), or `research`
-     (investigation/spike). Infer from verbs: "fix/broken/regression" → fix;
-     "add/build/support" → feature; "look into/investigate/compare/spike" → research.
-   - **priority** — `now` / `next` / `someday`. Default `next` unless the one-liner
-     signals urgency ("urgent", "broken in prod" → now) or deferral ("someday",
-     "nice to have" → someday).
-   - **milestone** — a milestone if the idea obviously maps to one and the repo uses
-     them (e.g. from `docs/roadmap/MILESTONES.md`); otherwise none.
-
-   Present it as a single compact block:
+1. **One-liner** — use it if given (`/idea <text>`); if bare, ask once: "What's the idea? (one line — fix / feature / research)".
+2. **Infer & propose**, one compact block, then "Accept all (y), or tell me what to change.":
+   - **title** — clean imperative (e.g. "Cache geocode lookups across requests")
+   - **slug** — kebab-case, ≤5 words, no date (e.g. `cache-geocode-lookups`)
+   - **type** — `fix`/`feature`/`research`, from verbs (fix/broken/regression → fix; add/build/support → feature; investigate/compare/spike → research)
+   - **priority** — `now`/`next`/`someday`, default `next` (urgency → now, "someday"/"nice to have" → someday)
+   - **milestone** — only if it obviously maps to one the repo uses (e.g. `docs/roadmap/MILESTONES.md`); else `none`
    ```
    title:     Cache geocode lookups across requests
    slug:      cache-geocode-lookups
@@ -55,27 +35,15 @@ infer. Never block capture on perfection — a thin idea filed beats a rich idea
    priority:  next
    milestone: none
    ```
-   Then: "Accept all (y), or tell me what to change."
-
-3. **Confirm-or-edit.** Apply any corrections. If the user gave no problem detail
-   in the one-liner, ask the *single* open question: "One line on the problem /
-   motivation?" (skippable). Capture optional **rough approach** only if the user
-   volunteers it — do not prompt for it.
-
-4. **Write the planning doc** to `docs/ideas/<date>-<slug>.md` (date = today,
-   `YYYY-MM-DD`) using the template below. Leave `issue:` blank for now.
-
-5. **File the GitHub Issue.** Write the issue body to a temp file, then run the
-   backend helper (it ensures labels exist and creates the issue):
+3. **Confirm-or-edit** — apply corrections; if no problem detail was given, ask one skippable question: "One line on the problem / motivation?" Capture **rough approach** only if volunteered.
+4. **Write the planning doc** to `docs/ideas/<date>-<slug>.md` (template below), `issue:` left blank.
+5. **File the issue** — write the body to a temp file, then:
    ```bash
    .claude/skills/idea/file-idea.sh \
      --title "<title>" --type <type> --priority <priority> \
      [--milestone M3] --body-file /tmp/idea-body.md
    ```
-   It prints `ISSUE_NUMBER=<n>` and `ISSUE_URL=<url>`. Use `--dry-run` to preview
-   without creating anything.
-
-   **Issue body** (the doc is the source of truth; the issue is the board entry):
+   Prints `ISSUE_NUMBER=<n>` / `ISSUE_URL=<url>`; `--dry-run` previews only. Body (doc is source of truth, issue is the board entry):
    ```markdown
    <2-3 line summary in your words>
 
@@ -84,14 +52,11 @@ infer. Never block capture on perfection — a thin idea filed beats a rich idea
 
    _Captured via /idea._
    ```
-
-6. **Backlink & commit.** Fill the doc's `issue:` frontmatter with the URL, then
-   commit *by name* (stage the one file, not `git add -A`):
+6. **Backlink & commit** — fill `issue:` with the URL, stage by name (not `git add -A`):
    ```bash
    git add docs/ideas/<date>-<slug>.md && git commit -m "idea: <title> (#<n>)"
    ```
-
-7. **Report.** One line: issue number + URL + doc path.
+7. **Report** one line: issue number + URL + doc path.
 
 ## Planning doc template (`docs/ideas/<date>-<slug>.md`)
 
@@ -117,18 +82,12 @@ created: <YYYY-MM-DD>
 -
 
 ## Notes
-<append as the idea evolves; this doc is the durable home, the issue is the pointer>
+<append as the idea evolves; doc is the durable home, issue is the pointer>
 ```
 
 ## Notes
 
-- **Backend is the helper script.** `file-idea.sh` owns label creation
-  (`idea` + type + `p:<priority>` + optional `area:M<n>`) and `gh issue create`.
-  It is idempotent (`gh label create --force`) and supports `--dry-run`.
-- **Milestone handling:** if a real GitHub milestone named `M<n>` exists, the
-  helper sets it; otherwise it applies an `area:M<n>` label (no GitHub milestones
-  exist today, so it's labels for now).
-- **Not in scope (by design):** no worktree creation (capture ≠ start-work — use
-  `/branch` or `/pickup` when you're ready to build it); no triage automation.
-- **Resuming an idea later:** list open issues (`gh issue list`, or `/pm` if you have
-  it); pick one, read its `docs/ideas/` doc, then `/branch <slug>` to start the work.
+- `file-idea.sh` creates labels (`idea` + type + `p:<priority>` + optional `area:M<n>`) and the issue; idempotent, supports `--dry-run`.
+- Sets a real GitHub milestone `M<n>` if one exists, else an `area:M<n>` label.
+- Out of scope: worktree creation (`/branch`/`/pickup` to start work), triage automation.
+- Resume later: `gh issue list` (or `/pm`) → read the doc → `/branch <slug>`.

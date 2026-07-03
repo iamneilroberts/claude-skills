@@ -10,7 +10,7 @@ user_invocable: true
 
 Occasional deep sweep. Three jobs: verify shipped-vs-claimed, surface loose ends / loss-risk (unpushed commits, stale worktrees, unchecked plans, unclosed handoffs), and reset what's next. Read-only except for the report file it writes; the MILESTONES.md change is PROPOSED, never applied.
 
-Boundary vs `/pm`: `/pm` is the live at-a-glance in-progress board (daily); `/sitrep` is periodic truth-reconciliation. The loose-ends/at-risk section here is loss-risk & staleness reconciliation, not the live board.
+If you also run a `/pm`-style live board (not included here): that's the daily at-a-glance of in-progress work; `/sitrep` is periodic truth-reconciliation. The loose-ends/at-risk section is loss-risk & staleness reconciliation, not a live board.
 
 ## Step 1 — Args + window
 `/sitrep` takes no required args. Determine the git/since window: read the newest prior `docs/digests/*-sitrep.md`; if found, window = its date → today; else default 14 days. Pass the window string (e.g. `14 days ago` or `2026-05-14`) to the backbone lane.

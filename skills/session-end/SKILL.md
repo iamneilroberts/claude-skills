@@ -124,7 +124,7 @@ Two lines exactly, for at-a-glance review and paste:
    ```
    Rename: [YYYY-MM-DD] <project-or-topic> - <what-was-done>
    ```
-   Topic = the project / repo / domain we worked in. "What was done" = the verb-phrase summary, ≤8 words.
+   Topic = the project / repo / domain worked in. "What was done" = the verb-phrase summary, ≤8 words.
 
 2. **Counter summary**:
    ```
@@ -133,19 +133,8 @@ Two lines exactly, for at-a-glance review and paste:
 
 If SESSION_LOG was skipped, say `SESSION_LOG skipped (no meaningful changes)` so it's clear that was a deliberate decision, not a bug.
 
-## Session Summary (in-conversation, before the close lines):
+## Session Summary (in-conversation, before the close lines)
 
-### Accomplished
-- Completed tasks
-- Files created/modified
-- Problems solved
-
-### Pending
-- Tasks started but not completed
-- Known issues to address
-- Next steps recommended
-
-### Handoff Notes
-- Key decisions made
-- Important context for next session
-- Any blockers or dependencies
+- **Accomplished** — completed tasks, files changed, problems solved.
+- **Pending** — started-but-unfinished, known issues, recommended next steps.
+- **Handoff Notes** — key decisions, context for next session, blockers/dependencies. Any Phase 3 CONTRADICTED claim goes here.

@@ -1,115 +1,65 @@
 ---
 name: pickup
 description: >
-  Use when the user wants to pick up / resume the most recent handoff in an
-  isolated worktree — finds the newest handoff doc, RESUMES the worktree/branch
-  it documents if one exists (re-adding it if parked), otherwise creates a fresh
-  branch + worktree, then loads the handoff's context so work continues where it
-  left off. Triggers on `/pickup`, "pick up the handoff", "resume the latest
-  handoff in a worktree", "branch and continue". Distinct from `session-resume`
-  (loads a handoff in-place, never branches) and `branch` (makes a worktree,
-  loads no handoff) — `/pickup` does both, reusing an existing worktree when one
-  is documented.
+  Use when the user wants to pick up / resume the most recent handoff in an isolated worktree —
+  finds the newest handoff doc, RESUMES the worktree/branch it documents if one exists (re-adding
+  it if parked), otherwise creates a fresh branch + worktree, then loads the handoff's context so
+  work continues where it left off. Triggers on `/pickup`, "pick up the handoff", "resume the
+  latest handoff in a worktree", "branch and continue". Distinct from `session-resume` (loads a
+  handoff in-place, never branches) and `branch` (makes a worktree, loads no handoff) — `/pickup`
+  does both, reusing an existing worktree when one is documented.
 user_invocable: true
 args: "[branch-slug | date/topic filter | handoff path]"
 ---
 
 # Pickup
 
-Resume the newest handoff in an isolated worktree, then load its context.
-**Reuse the worktree/branch the handoff documents if it still exists; only create
-a new one when none is documented or it's gone.** Orchestrates two existing
-skills — do NOT reimplement their internals.
+Resume the newest handoff in an isolated worktree, then load its context. Reuse the documented worktree/branch if it still exists; create a new one only when none is documented or it's gone. Orchestrates `branch` and `session-resume` — do not reimplement their internals.
 
-> **Requires the `branch` and `session-resume` skills from this same collection** (and, optionally,
-> `/pm` for the in-flight-lanes tip below). It calls them rather than reimplementing worktree
-> creation or handoff discovery, so install those alongside it.
+> **Requires `branch` and `session-resume`** from this collection (optionally `/pm`, see step 1 tip). Install alongside this skill.
 
 ## Steps
 
-1. **Find the handoff.** Use the **`session-resume`** discovery logic (searches the
-   shared coord `handoffs/` dir first, then legacy in-tree dirs). Honor its **handoff
-   precedence**: prefer the newest *intentional* `pause-*.md`, falling back to a
-   *mechanical* `auto-*.md` only when no intentional handoff exists. If an arg looks
-   like a path, use it directly; if it looks like a date/topic/slug, filter by it
-   (this is how you target a specific lane when several are in flight — e.g. the
-   session name); otherwise take the newest intentional one. If several match, list
-   the 5 most recent and ask which. If none, say so and stop. Read the chosen file.
-   **Tip:** for a fast picture of all in-flight lanes before choosing, run `/pm`.
+1. **Find the handoff.** Use `session-resume`'s discovery (shared `handoffs/` dir, then legacy in-tree dirs). Prefer newest *intentional* `pause-*.md`; fall back to a *mechanical* `auto-*.md` only if none exists. Path arg → use it. Date/topic/slug arg → filter by it. No arg → newest intentional handoff. Multiple matches → list the 5 most recent and ask. None → say so, stop. Read the file. Tip: run `/pm` first for a picture of all in-flight lanes.
 
-2. **WIP / worktree safety FIRST.** Run `git worktree list` + read the shared journal
-   at `$(bash ~/.claude/coordination/resolve-coord-dir.sh)/journal.md` (the out-of-tree
-   source of truth; the in-tree `docs/worktree-journal.md` is a tombstone pointer). If another session has uncommitted WIP or an
-   active worktree that overlaps, surface it and pause before touching anything
-   (per the worktree-awareness rule). Never branch on top of another session's WIP.
+2. **WIP/worktree safety first.** Run `git worktree list` and read the shared journal (`$(bash ~/.claude/coordination/resolve-coord-dir.sh)/journal.md`; the in-tree `docs/worktree-journal.md` is only a tombstone pointer). If another session has uncommitted WIP or an overlapping active worktree, surface it and pause. Never branch on top of another session's WIP.
 
-3. **Resume-or-create decision (the core of this skill).** Parse the handoff +
-   journal for a documented branch/worktree (a `Branch:`/`Worktree:` line, a
-   `## Parked` entry, or an "Active" journal entry for this topic). Then:
-   - **Active worktree still on disk** (in `git worktree list`) → that's the
-     target. `cd` into it, verify `git status`/`git branch`, resume there. **Do
-     not create a new branch.**
-   - **Branch exists but no worktree** — parked (on `origin/<branch>`) or local
-     only (`git rev-parse --verify <branch>`) → re-add the worktree for it:
-     `git worktree add ../<repo>-<slug> <branch>` (or `/branch <slug> --reuse`).
-     Resume on the existing branch — don't fork a duplicate.
-   - **Nothing documented, or the branch/worktree is gone** (e.g. work shipped &
-     pruned, handoff describes NEW next-work) → create a fresh one: go to step 4.
-   When unsure which case applies, state what you found and confirm with the user.
+3. **Resume-or-create.** Check the handoff + journal for a documented branch/worktree (`Branch:`/`Worktree:` line, `## Parked` entry, or an "Active" journal entry):
+   - **Worktree present** → `cd` in, verify `git status`/`git branch`, resume. No new branch.
+   - **Branch exists, worktree gone** (parked on `origin/<branch>` or local-only) → re-add: `git worktree add ../<repo>-<slug> <branch>` (or `/branch <slug> --reuse`). Resume on the existing branch.
+   - **Nothing documented, or both gone** (shipped & pruned, or the handoff describes new work) → go to step 4.
 
-4. **(New-work path only) Create the worktree.** Derive a slug — prefer an arg,
-   else propose one from the handoff's "next" work (kebab-case, e.g.
-   `folio-budget-depth`; must match `^[a-z][a-z0-9-]*$`); confirm if ambiguous.
-   Then invoke the **`branch`** skill with that slug (it owns the path convention
-   `../<repo>-<slug>`, the journal entry, and base selection — default `main`).
-   Don't hand-roll `git worktree add` for a brand-new branch.
+   Unsure which applies → state findings and ask.
 
-5. **Project worktree setup (only if the repo needs it, and only for a freshly
-   created/re-added worktree).** Fresh worktrees have
-   no deps/secrets. If the project requires them (e.g. a `node_modules` symlink
-   and `.env`/`.dev.vars` copy — check the project CLAUDE.md / handoff for the
-   exact convention), set them up:
-   `ln -s <main-clone>/node_modules <wt>/node_modules` and copy the gitignored
-   env files. Skip for repos that don't need it.
+4. **(New work only) Create the worktree.** Derive a slug — prefer an arg, else propose one from the handoff's "next" work (kebab-case, `^[a-z][a-z0-9-]*$`; confirm if ambiguous). Invoke `branch` with it — it owns the path convention, journal entry, and base (default `main`). Don't hand-roll `git worktree add`.
 
-6. **Load the context.** Summarize the handoff (done / what's-next / the first
-   action). If it has a checklist or `## Checklist`/`## Instructions`, rebuild
-   the TodoWrite list from the unchecked items and mirror to
-   `docs/summaries/CHECKLIST.md` in the target worktree. Heartbeat the journal:
-   `/branch update --working-on "<the next task from the handoff>"`.
+5. **Project setup, if the repo needs it** (fresh/re-added worktree only). Fresh worktrees have no deps/secrets — check CLAUDE.md/the handoff for the convention (e.g. symlink `node_modules`, copy `.env`/`.dev.vars`). Skip if not needed.
 
-7. **Confirm before working.** Present the first concrete next step from the
-   handoff and ask whether to proceed (don't auto-start a big build; a design
-   gate or `/branch`-before-code rule in the handoff still applies).
+6. **Load the context.** Summarize done / what's-next / first action. Rebuild TodoWrite from any unchecked `## Checklist`/`## Instructions` items, mirror to `docs/summaries/CHECKLIST.md` in the worktree. Heartbeat: `/branch update --working-on "<next task>"`.
+
+7. **Confirm before working.** Present the first concrete next step and ask before proceeding — honor any design gate or `/branch`-before-code rule the handoff carries.
 
 ## Quick reference
 
 | Invocation | Behavior |
 |---|---|
 | `/pickup` | Newest handoff → resume its worktree if documented, else new |
-| `/pickup <slug>` | Same; use `<slug>` only when creating a NEW worktree |
-| `/pickup 2026-06-14` / `/pickup budget` | Filter handoffs by date/topic first |
+| `/pickup <slug>` | Same; slug used only when creating a NEW worktree |
+| `/pickup 2026-06-14` / `/pickup budget` | Filter handoffs by date/topic |
 | `/pickup docs/summaries/handoff-….md` | Use that exact handoff |
 
 ## Resume-or-create at a glance
 
-| Handoff documents… | …and on disk | Action |
+| Handoff documents… | On disk | Action |
 |---|---|---|
-| an active worktree | worktree present | `cd` in, resume — no new branch |
-| a branch (parked/origin/local) | worktree gone | re-add worktree for that branch |
+| active worktree | present | `cd` in, resume — no new branch |
+| branch (parked/origin/local) | worktree gone | re-add worktree for it |
 | nothing, or shipped+pruned | gone | create a fresh `branch` |
 
 ## Common mistakes
 
-- **Creating a new branch when one already exists** — a *pause* handoff usually
-  names an in-flight worktree/branch to RESUME; only a *shipped & pruned* handoff
-  whose "next" is genuinely new work warrants a fresh branch. Forking a duplicate
-  orphans the in-flight work.
-- **Branching before the WIP check** — always run step 2 first; cross-session
-  WIP has caused Frankenstein commits here.
-- **Reimplementing `branch`/`session-resume`** — call them; this skill only
-  sequences them.
-- **Auto-starting the work** — `/pickup` sets the stage; honor any design-gate /
-  sign-off the handoff requires before coding.
-- **Hardcoding project deps setup** — node_modules/.env is project-specific;
-  only do step 5 when the repo actually needs it.
+- **New branch when one exists** — a *pause* handoff usually names in-flight work to resume; fork only for shipped-and-pruned handoffs with genuinely new work.
+- **Skipping the WIP check (step 2)** — cross-session WIP causes Frankenstein commits.
+- **Reimplementing `branch`/`session-resume`** — call them; this skill only sequences them.
+- **Auto-starting the work** — honor any design-gate/sign-off the handoff requires.
+- **Hardcoding deps setup** — node_modules/.env is project-specific; only do step 5 when needed.
