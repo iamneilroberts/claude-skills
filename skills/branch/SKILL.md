@@ -1,28 +1,20 @@
 ---
 name: branch
 description: >
-  Create an isolated git worktree for a new task, log it to the repo's work
-  journal, and prepare a clean workspace so multiple Claude Code sessions can
-  run in parallel without clobbering each other's HEAD or uncommitted edits.
-  Use whenever the user starts a new coding task in a repo that may have other
-  agent sessions active, or when you detect WIP from another session in the
-  current working tree. Subcommands: `list`, `done <slug>`, `update`
-  (heartbeat: working-on / blocked-by / asks / dont-touch), `coord <message>`
-  (post a cross-session constraint), `coord clear <slug>` (drop one session's
-  coord lines). Also triggers on phrases like "start in a worktree", "isolate
-  this work", "parallel session", "clean workspace for X", "post a coord note",
-  "heartbeat the journal", "what are the other sessions doing".
+  Create an isolated git worktree for a task and log it to a shared work journal, so
+  multiple Claude Code sessions run in parallel without racing on HEAD, uncommitted edits,
+  or the index. Subcommands: `list`, `done <slug>`, `update` (heartbeat), `coord <message>`
+  / `coord clear <slug>` (cross-session constraints). Triggers on `/branch`, "start in a
+  worktree", "isolate this work", "parallel session", "heartbeat the journal".
 model: sonnet
 ---
 
-# /branch — Isolated worktree creation for parallel agent sessions
+# /branch — isolated worktree for parallel agent sessions
 
-Two Claude Code sessions in the same working directory race on:
-- **HEAD** — `git checkout` switches it for everyone in that dir
-- **Uncommitted edits** — they leak across branch checkouts
-- **The index** — staging-area collisions
-
-Git worktrees give each session its own working files, HEAD, and index while sharing `.git` (all branches/objects stay visible). This skill wraps `git worktree add` with project conventions and a journal entry so other sessions can see what's in flight. Cost: one extra directory, ~zero git overhead.
+Two sessions in one working dir race on HEAD (`git checkout` switches it for everyone),
+uncommitted edits (leak across checkouts), and the index. Worktrees give each session its own
+working files, HEAD, and index while sharing `.git`. This wraps `git worktree add` with project
+conventions + a journal entry. Cost: one directory, ~zero git overhead.
 
 ## Argument shapes
 
@@ -73,42 +65,23 @@ Override: if `${REPO_ROOT}/.claude/worktree-base` exists, read it as a path temp
 
 Refuse if the resolved path already exists.
 
-### 4. Create the worktree and run the setup hook
+### 4. Create the worktree, run the setup hook
 
 ```bash
 git worktree add "$WORKTREE_PATH" -b "$SLUG" "$BASE_BRANCH"
 ```
+On failure, surface the error and stop — don't write the journal entry.
 
-On failure, surface the exact error and stop — do not write the journal entry.
-
-A fresh worktree shares `.git` but not gitignored working-tree files — notably local secrets (`.dev.vars`, `.env`) and build artifacts (`node_modules`). Without these a new session can't typecheck, run dev, or smoke-test.
-
-**If `${REPO_ROOT}/.claude/worktree-setup.sh` exists**, run it inside the new worktree:
+A fresh worktree shares `.git` but not gitignored files (`.dev.vars`, `.env`, `node_modules`), so a new session can't build/test without them. If `${REPO_ROOT}/.claude/worktree-setup.sh` exists, run it in the new worktree with `REPO_ROOT`/`WORKTREE_PATH`/`SLUG`/`BASE_BRANCH` in the env and the worktree as CWD:
 
 ```bash
 if [ -f "$REPO_ROOT/.claude/worktree-setup.sh" ]; then
-  ( cd "$WORKTREE_PATH" && \
-    REPO_ROOT="$REPO_ROOT" WORKTREE_PATH="$WORKTREE_PATH" SLUG="$SLUG" BASE_BRANCH="$BASE_BRANCH" \
-    bash "$REPO_ROOT/.claude/worktree-setup.sh" )
+  ( cd "$WORKTREE_PATH" && REPO_ROOT="$REPO_ROOT" WORKTREE_PATH="$WORKTREE_PATH" \
+    SLUG="$SLUG" BASE_BRANCH="$BASE_BRANCH" bash "$REPO_ROOT/.claude/worktree-setup.sh" )
 fi
 ```
 
-The hook is a repo-authored, version-controlled, trusted script. It receives `REPO_ROOT` (main clone, source for symlinking secrets), `WORKTREE_PATH`, `SLUG`, `BASE_BRANCH` in its environment, with the worktree as CWD. Typical contents: symlink gitignored secrets from the main clone, install deps, run codegen. Example:
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-# Symlink local secrets from the main clone (gitignored, not carried by the worktree)
-for f in .dev.vars .env; do
-  [ -e "$REPO_ROOT/$f" ] && [ ! -e "$f" ] && ln -s "$REPO_ROOT/$f" "$f"
-done
-# Install deps (share-nothing; worktrees each need their own node_modules)
-[ -f package.json ] && npm install --no-audit --no-fund
-```
-
-Surface the hook's stdout/stderr to the user. **If the hook fails, do not delete the worktree** — it's already created and the journal entry should still be written; report the failure and let the user fix and re-run the hook by hand.
-
-**If no hook file exists**, don't invent one silently — mention it in step 6's output and offer to scaffold one (for this repo: symlink `.dev.vars`/`.env`, run `npm install`). Skip the offer if the repo has no `package.json` and no gitignored env files.
+That repo-authored script typically symlinks gitignored secrets from the main clone and installs deps (e.g. `ln -s "$REPO_ROOT/.dev.vars" .` then `npm install`). Surface its output. **If it fails, keep the worktree** (already created) and write the journal entry anyway — report the failure for a manual re-run. **If no hook exists**, don't invent one: note it in step 6 and offer to scaffold one (symlink `.dev.vars`/`.env` + `npm install`), skipping when the repo has no `package.json` or env files.
 
 ### 5. Update the journal
 
