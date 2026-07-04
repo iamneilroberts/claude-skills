@@ -7,6 +7,15 @@ description: Fetch a specific public Reddit post (title, body, and top comments)
 
 Fetch one public Reddit post + its top comments, rendered as markdown.
 
+## Run it directly — no plan mode, no brainstorming
+
+This skill is a single mechanical fetch, not a project. When it triggers (a `/get-reddit`
+invocation or a pasted Reddit URL to read/summarize), do **NOT** enter plan mode, brainstorm,
+or write a plan first — run the script immediately, then summarize. The "process skills come
+first" rule doesn't apply: this skill *is* the process, and there are no design decisions to
+make. If the session is already in plan mode when this triggers, tell the user the fetch needs
+to execute a script and ask them to exit plan mode (Shift+Tab).
+
 ## When to use
 
 - The user pastes a Reddit URL and wants its contents read/summarized.
@@ -43,8 +52,11 @@ Requires `node` and `npm` on PATH.
 ## Usage
 
 ```bash
-.claude/skills/get-reddit/get-reddit.sh <reddit-url-or-post-id> [comment_limit]
+.claude/skills/get-reddit/get-reddit.sh <reddit-url-or-post-id> [comment_limit] | tee <scratchpad>/reddit-<post-id>.md
 ```
+
+Always `tee` the output to a scratchpad file as shown — the save offer below reuses it, so a
+save never refetches (Reddit rate-limits; see "Be gentle").
 
 Accepts a full post URL, an `old.reddit.com` URL, a `redd.it/<id>` short link, or a bare
 base-36 post id. `comment_limit` (default 25) caps top-level comments, sorted by score. Output
@@ -56,6 +68,15 @@ Env knobs:
   solving the challenge persists in the profile so later headless runs work.
 - `GET_REDDIT_PROFILE=<dir>` — override the persisted browser-profile dir (default `.profile/`
   beside the script; gitignored).
+
+## After the summary: offer to save
+
+After emitting the summary, ask the user (one short question, e.g. via AskUserQuestion) whether
+to save the fetched thread as a markdown file. Propose a concrete default path derived from the
+post: `docs/research/reddit/<yyyy-mm-dd>-r-<subreddit>-<title-slug>.md` (kebab-case the title,
+truncate to ~6 words). If they accept, copy the tee'd scratchpad file there (prepend your
+summary as a short intro section above the fetched content); if they pick another path, use
+that; if they decline, do nothing. Never refetch to save.
 
 ## Notes / limits
 
