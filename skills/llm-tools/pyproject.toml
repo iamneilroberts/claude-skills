@@ -1,0 +1,22 @@
+[project]
+name = "llm-tools"
+version = "0.1.0"
+description = "CLI helpers that route bulk-read and boilerplate-write tasks from Claude Code to a cheaper OpenAI-compatible model (Kimi, DeepSeek, OpenRouter, Ollama)."
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=1.50.0",
+    "click>=8.1.7",
+    "pydantic>=2.7",
+]
+
+[project.scripts]
+llm-ask = "llm_tools.cli.ask:main"
+llm-write = "llm_tools.cli.write:main"
+llm-extract = "llm_tools.cli.extract:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/llm_tools"]

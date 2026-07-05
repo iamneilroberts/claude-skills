@@ -1,0 +1,60 @@
+# llm-tools config.
+# Copy to ~/.config/llm-tools/config.toml and edit.
+#
+# Auth: set the env vars referenced by `api_key_env`. Examples:
+#   export KIMI_API_KEY=sk-...
+#   export DEEPSEEK_API_KEY=sk-...
+#   export OPENROUTER_API_KEY=sk-or-...
+# Ollama needs no key.
+
+# ---------- Providers ----------
+
+[providers.kimi]
+# Moonshot AI / Kimi. International endpoint:
+base_url = "https://api.moonshot.ai/v1"
+# China endpoint: "https://api.moonshot.cn/v1"
+api_key_env = "KIMI_API_KEY"
+default_model = "kimi-k2.6"
+
+[providers.deepseek]
+base_url = "https://api.deepseek.com/v1"
+api_key_env = "DEEPSEEK_API_KEY"
+# Models: "deepseek-v4-flash" (cheap, fast), "deepseek-v4-pro" (top-tier, ~6x more).
+# Legacy aliases "deepseek-chat" / "deepseek-reasoner" still work and map to v4-flash.
+default_model = "deepseek-v4-flash"
+
+[providers.openrouter]
+base_url = "https://openrouter.ai/api/v1"
+api_key_env = "OPENROUTER_API_KEY"
+# Pick whichever cheap, long-context model OpenRouter currently exposes.
+default_model = "qwen/qwen-2.5-72b-instruct"
+# Optional: OpenRouter recommends identifying your app.
+# extra_headers = { "HTTP-Referer" = "https://github.com/yourname/yourrepo", "X-Title" = "llm-tools" }
+
+[providers.ollama]
+# Point this at the box on your network running `ollama serve`.
+# Localhost: "http://localhost:11434/v1"
+# LAN box:   "http://192.168.1.100:11434/v1"
+base_url = "http://localhost:11434/v1"
+# api_key_env left unset — Ollama doesn't authenticate by default.
+default_model = "qwen2.5:32b"
+
+# ---------- Routing ----------
+# Each task type picks a provider (and optionally a model + budgets).
+# Override per-call with --provider / --model.
+
+[routing.ask]
+# High input, low output, often cache-hit. Flash is plenty smart for "summarize these files."
+provider = "deepseek"
+# model defaults to deepseek-v4-flash
+
+[routing.write]
+# Output-dominated; want code quality. Pro is ~5x cheaper than Kimi K2.6 during the
+# 75%-off promo through 2026-05-31. Re-evaluate Kimi after that date.
+provider = "deepseek"
+model = "deepseek-v4-pro"
+
+[routing.extract]
+# Cheapest possible workload — high input, low output, no real reasoning.
+provider = "deepseek"
+# model defaults to deepseek-v4-flash
