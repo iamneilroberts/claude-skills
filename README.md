@@ -71,6 +71,7 @@ It lives in three places that reinforce each other:
 | [`get-reddit`](skills/get-reddit/SKILL.md) | Fetch one public Reddit post + its top comments as clean markdown, by driving a real browser (see note below). |
 | [`claude-code-best-practices`](skills/claude-code-best-practices/SKILL.md) | Routes questions to a local mirror of the Claude Code docs. |
 | [`evaluate`](skills/evaluate/SKILL.md) | Teardown a third-party product/repo from a URL; fan out read-only subagents; decide ADOPT / LIFT / SKIP. |
+| [`frontier-spend`](skills/frontier-spend/SKILL.md) | Spend scarce/expiring premium-model access on durable judgment artifacts: adjudicate-don't-author, rationed audits, effort tuning, review-the-premium-output. |
 | [`review-panel`](skills/review-panel/SKILL.md) | Multi-model code review (Codex + Gemini + a fresh Claude), merged with a consensus-gated challenge round and a pass/fail exit code. |
 | [`codex-review`](skills/codex-review/SKILL.md) | Single-reviewer external pass (Codex) with a structured JSON verdict and mechanical gate. |
 | [`gemini-review`](skills/gemini-review/SKILL.md) | Single-reviewer external pass using the Gemini CLI, presented alongside your own analysis. |
