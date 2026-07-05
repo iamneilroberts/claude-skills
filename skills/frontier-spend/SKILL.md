@@ -31,6 +31,26 @@ not typing" right on their own — the four rules below are the ones they miss.
    wrong — keep the external review gate on its artifacts, don't exempt them because
    "the smart model wrote it".
 
+## Native mechanism for rule 1 (Claude Code v2.1.170+): the Advisor tool
+
+Anthropic shipped a first-party **Advisor tool** (`code.claude.com/docs/en/advisor`) that
+implements "premium judges, doesn't type" directly: a cheaper executor model consults a
+higher-intelligence advisor model mid-generation. The relevant pairing for a capped
+premium tier is **executor-main + premium-advisor** (e.g. Sonnet main + Fable advisor):
+premium guidance at decision points without running the premium model throughout. Prefer
+this over a hand-rolled adjudication loop for *mid-task* decisions when it is available.
+
+It does **not** replace the rest of the doctrine, and three known limits are why:
+- **Server-side, not hookable.** You cannot gate it to specific phases — it is a prose-only
+  rule available to any eligible agent. Rationing (rule 2) and effort tuning (rule 3)
+  remain your manual discipline.
+- **It still spends the cap, unbounded.** A consult on a large session burns premium
+  budget; budget-first math still applies.
+- **It vanishes at the cliff.** When affordable premium access ends, the premium-advisor
+  pairing goes with it — so the durable-artifact core (bank plans/audits/tests a cheap
+  model executes later) is what survives, unchanged. Use the Advisor tool for live
+  decisions *now*; keep banking artifacts for *after*.
+
 ## Standing hygiene (agents mostly do this unprompted; keep anyway)
 
 - Pre-digest context: open every premium session with a brief built by a cheap model

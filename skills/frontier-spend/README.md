@@ -22,7 +22,12 @@ agents get wrong *by default* (verified — see [Testing](#testing) below):
    independent cross-vendor reviewer audits → premium model adjudicates the
    disagreements and patches.** Same banked artifact; several times more of them per
    cap. From-scratch authoring only after a cheap draft comes back structurally wrong
-   twice.
+   twice. As of Claude Code v2.1.170 there is a **native mechanism** for the mid-task
+   version of this — the [Advisor tool](https://code.claude.com/docs/en/advisor), where
+   a cheap executor consults a premium advisor at decision points (e.g. Sonnet main +
+   Fable advisor). Use it for live decisions; it doesn't replace the banked-artifact
+   loop, and it can't be phase-gated, still spends the cap, and disappears when premium
+   access ends. See the skill for the full caveat.
 2. **Ration audits to a named budget.** Comprehensive review sweeps feel high-value
    and exhaust a cap fastest. Pick the audit count up front (default: **two**) and
    name them — e.g. a golden-path adversarial review before an important demo, and one
