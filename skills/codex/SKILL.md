@@ -31,11 +31,17 @@ message (`-o`), and falls back across models on failure.
 
    > Run the Codex CLI and return its final answer VERBATIM — trim only banner/progress
    > noise, do not summarize or editorialize. Run:
-   > `printf %s '<PROMPT>' | bash <SKILL_DIR>/codex.sh [--write] [-m MODEL] -`
+   > `printf %s '<PROMPT>' | bash <SKILL_DIR>/codex.sh [--write] [--stats] [-m MODEL] -`
    > (stdin form avoids quoting problems for long or quote-heavy prompts). If the script
    > exits non-zero, report its stderr line so the caller can retry. If `--write` was used,
    > also run `git status --short` and `git --no-pager diff` afterward and include a short
    > list of what Codex changed.
+
+   **Only pass `--stats`** when the user asked for Codex's token usage or API cost (e.g. a
+   model comparison / cost accounting). It appends a token-usage + estimated-cost block after
+   the answer; relay that block verbatim. Omit `--stats` for normal delegation so output stays
+   clean. Cost is an estimate — override the rates with `CODEX_PRICE_INPUT_PER_M` /
+   `CODEX_PRICE_CACHED_PER_M` / `CODEX_PRICE_OUTPUT_PER_M` if the model's real pricing differs.
 
 3. **Relay Codex's answer** to the user, attributed ("Codex says:") so it's clear this is the
    second model, not you. If `--write` was used, review the diff the subagent returned and
