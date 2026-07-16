@@ -3,12 +3,20 @@
 #
 # This is the JUDGE. It is committed and must NOT be edited mid-review by the session
 # whose code it is reviewing (pattern #4, "judge immutability"): the implementer edits
-# source, never this gate. It runs `codex exec` READ-ONLY, forces a JSON verdict against
-# sev.schema.json (pattern #1), and converts that verdict into a gate exit code so the
-# result is enforced MECHANICALLY — the authoring model does not get to re-litigate a
-# CRITICAL/IMPORTANT finding (pattern #2). An infra failure (rate-limit / model reject /
-# empty output) is its own exit code so a transient error is never mistaken for "clean"
-# and never feeds a fix loop (pattern #3, infra-vs-findings guard).
+# source, never this gate. It runs `codex exec` in a WORKSPACE-WRITE sandbox so the
+# reviewer can actually execute `tsc` and the test suite, and enforces judge immutability
+# with a before/after tree+HEAD fingerprint (a mutation is INFRA, not a verdict). It
+# forces a JSON verdict against sev.schema.json (pattern #1) and converts that verdict
+# into a gate exit code so the result is enforced MECHANICALLY — the authoring model does
+# not get to re-litigate a CRITICAL/IMPORTANT finding (pattern #2). An infra failure
+# (rate-limit / model reject / empty output / a tampering reviewer) is its own exit code
+# so a transient error is never mistaken for "clean" and never feeds a fix loop
+# (pattern #3, infra-vs-findings guard).
+#
+# History: this ran `-s read-only` until 2026-07-15. That mode CANNOT run vitest (Vite
+# must write a temp config file), so the reviewer silently never executed anything while
+# still reporting "typecheck passed" and test counts lifted from the diff's commit
+# messages. Verification you cannot run is not verification.
 #
 # Exit codes:
 #   0  CLEAN     — no findings at/under the blocking threshold. Gate PASS.
@@ -111,6 +119,21 @@ ACTUAL code; cite file:line for anything you assert is wrong.
 Flag CORRECTNESS and SECURITY problems first, then sequencing/contract bugs, then real
 maintainability issues. Do not invent work; if it is correct, say so.
 
+YOU CAN RUN CODE — USE IT. Your sandbox is workspace-write, so you can execute the
+typechecker and the test suite (e.g. \`npx tsc --noEmit\`, \`npx vitest run <file>\`).
+Prefer EVIDENCE over inference:
+  - Before asserting a finding is real, try to PROVE it — run the relevant test, or write
+    a throwaway scratch check under /tmp and run it. A finding you demonstrated outranks
+    one you reasoned to.
+  - NEVER claim "typecheck passes" or "the suite passes (N tests)" unless YOU ran it in
+    THIS session and saw that output. Do not restate test counts or pass/fail claims from
+    commit messages, comments, or the diff — those are the author's claims, not evidence.
+    If you did not run it, say so plainly in \`notes\`.
+  - Report what you actually ran in \`notes\`.
+DO NOT EDIT THE REPO. You are the judge, not the author: no fixes, no reformatting, no
+staging, no commits — the harness fingerprints the tree and voids your verdict if it
+changed. Scratch files go in /tmp, never in the workspace.
+
 ${FOCUS:+REVIEWER FOCUS (the author asked you to weigh these specifically):
 ${FOCUS}
 }
@@ -139,20 +162,59 @@ if [[ $DRY_RUN -eq 1 ]]; then
   exit 0
 fi
 
-# ---- run codex (read-only) with model fallback -------------------------------
+# ---- sandbox mode: workspace-write, enforced by a tamper check ----------------
+# WHY NOT read-only (changed 2026-07-15): `-s read-only` cannot run the test suite at
+# all — Vite must write `<config>.timestamp-*.mjs` next to vitest.config.ts to load a
+# TS config, and read-only denies it. The reviewer therefore never executed anything and
+# reported "typecheck passed" / "the suite passes (N tests)" WITHOUT running them (those
+# numbers were being read off the diff's own commit messages). A judge that cannot run
+# the tests is a static reviewer wearing a verification badge.
+#
+# workspace-write lets it genuinely run `tsc` + `vitest`. Judge immutability (pattern #4)
+# is preserved by ENFORCEMENT rather than by assumption: we fingerprint the working tree
+# and HEAD before/after and fail INFRA if the reviewer mutated the defendant. That is a
+# stronger guarantee than read-only gave us, because it is now checked.
+#
+# Escape hatch: CODEX_REVIEW_SANDBOX=read-only restores the old behaviour.
+SANDBOX_MODE="${CODEX_REVIEW_SANDBOX:-workspace-write}"
+
+# Vite's temp config file is expected write noise — exclude it from the fingerprint.
+tree_fingerprint() {
+  { git -C "$ROOT" status --porcelain 2>/dev/null | grep -vE '\.timestamp-[0-9]+-[a-f0-9]+\.mjs$' | sort
+    git -C "$ROOT" rev-parse HEAD 2>/dev/null
+  } | sha256sum | cut -d' ' -f1
+}
+FP_BEFORE="$(tree_fingerprint)"
+
+# ---- run codex with model fallback -------------------------------------------
 RAW="$(mktemp)"; trap 'rm -f "$RAW" ${DIFF_FILE:+"$DIFF_FILE"}' EXIT
 got=""
 for M in "" "-m gpt-5.1-codex" "-m gpt-5-codex"; do
-  echo ">>> codex exec ${M:-(default model)} [read-only]" >&2
+  echo ">>> codex exec ${M:-(default model)} [${SANDBOX_MODE}]" >&2
   # --output-schema is best-effort; the prompt also pins the JSON contract as a fallback.
-  codex exec -s read-only $M --output-schema "$SCHEMA" -C "$ROOT" "$PROMPT" >"$RAW" 2>>"$RAW" \
-    || codex exec -s read-only $M -C "$ROOT" "$PROMPT" >"$RAW" 2>>"$RAW" || true
+  codex exec -s "$SANDBOX_MODE" $M --output-schema "$SCHEMA" -C "$ROOT" "$PROMPT" >"$RAW" 2>>"$RAW" \
+    || codex exec -s "$SANDBOX_MODE" $M -C "$ROOT" "$PROMPT" >"$RAW" 2>>"$RAW" || true
   if grep -q "is not supported when using Codex" "$RAW"; then
     echo "(model rejected, trying next...)" >&2; continue
   fi
   got="yes"; break
 done
 [[ -z "$got" ]] && { echo "INFRA: every model was rejected by the account" >&2; exit 2; }
+
+# ---- judge immutability, ENFORCED (pattern #4) --------------------------------
+# The judge must not edit the defendant. A reviewer that "helpfully" fixed what it found
+# would invalidate the verdict AND silently rewrite the lane's work, so this is INFRA
+# (exit 2) — never a pass, never a fix-loop input.
+FP_AFTER="$(tree_fingerprint)"
+if [[ "$FP_BEFORE" != "$FP_AFTER" ]]; then
+  echo "INFRA: the reviewer MUTATED the working tree or HEAD (judge immutability, pattern #4)." >&2
+  echo "       Sandbox was '${SANDBOX_MODE}'. Inspect and revert before trusting any verdict:" >&2
+  git -C "$ROOT" status --short >&2
+  exit 2
+fi
+# Vite temp files are auto-cleaned, but a crashed run can strand one — never leave the
+# lane's tree dirtier than we found it.
+find "$ROOT" -maxdepth 2 -name '*.timestamp-*.mjs' -newermt '-1 hour' -delete 2>/dev/null || true
 
 # ---- parse + recompute the gate MECHANICALLY (script is authoritative, not the model) --
 python3 - "$RAW" "$OUT" "$BLOCK_AT" <<'PY'

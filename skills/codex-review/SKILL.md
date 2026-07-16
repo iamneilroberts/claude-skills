@@ -19,7 +19,7 @@ user_invocable: true
 Codex is the judge; the diff is the defendant. This session does not get to overrule a
 CRITICAL/IMPORTANT verdict.
 
-## The four disciplines
+## The five disciplines
 
 1. **Structured verdict** — Codex emits JSON against `sev.schema.json`, not prose. The gate is
    computed from `priority`, never eyeballed.
@@ -29,7 +29,13 @@ CRITICAL/IMPORTANT verdict.
 3. **Infra ≠ clean** — a rate-limit / model-reject / empty-output run exits `2` (INFRA), never `0`.
    Never treat it as a pass or feed it into a fix loop.
 4. **Judge immutability** — `codex-review.sh` + `sev.schema.json` are committed and **must not be
-   edited during a review cycle**. Edit source; never edit the gate that judges it.
+   edited during a review cycle**. Edit source; never edit the gate that judges it. The reverse is
+   enforced too: the gate fingerprints the working tree + HEAD before and after, so a reviewer that
+   edited your code is INFRA (exit 2), never a verdict.
+5. **Verification must be executed, not asserted** — the reviewer runs `workspace-write` so it can
+   actually run your typechecker and tests, and is told to prove findings by running them and never
+   to restate test counts from commit messages. Read its `notes`: if it claims a pass without naming
+   a command it ran, distrust it. See "Why #5 exists" below — this was learned the hard way.
 
 ## Usage
 
@@ -71,9 +77,40 @@ Run as a capped loop; the script decides each gate, not your judgment.
 
 ## Notes
 
-- **Read-only.** Codex runs `-s read-only`; it inspects, never edits. All fixes are yours.
-- Model fallback (`default → gpt-5.1-codex → gpt-5-codex`) and the read-only sandbox match the
-  prior one-off review scripts, now replaceable with `--plan <file> --focus "<questions>"`.
+- **workspace-write, not read-only.** Codex runs `-s workspace-write` so it can execute your
+  typechecker and test suite; it is told not to edit, and the gate *enforces* that with a
+  before/after tree+HEAD fingerprint (a mutation ⇒ INFRA exit 2). All fixes are still yours.
+  Override with `CODEX_REVIEW_SANDBOX=read-only` — but note that mode **cannot run Vitest at all**,
+  because Vite must write a temp config file next to `vitest.config.ts` to load a TS config, so the
+  reviewer silently drops back to static-only.
+
+### Why #5 exists
+
+This gate ran `-s read-only` until 2026-07-15. Two things were wrong with that, and together they
+made the reviewer *look* like it was verifying while it was not:
+
+1. Read-only can't run Vitest (the temp-config write above) — a flaw in the mode choice itself.
+2. On Ubuntu 24.04, `kernel.apparmor_restrict_unprivileged_userns=1` blocks unprivileged user
+   namespaces. Codex sandboxes with bubblewrap, which needs them, so **every command it tried died**
+   (`bwrap: loopback: Failed RTM_NEWADDR`). It could not run *anything*.
+
+It reported verification anyway — "TypeScript type-checking passed" without ever running the
+typechecker, and once a precise test count that turned out to be **copied from the diff's own commit
+message**. It was reading the author's claims and handing them back as evidence.
+
+The cost, on one real lane: 17 rounds of apparent convergence while a bug that made publishing
+permanently impossible sat in the diff untouched. A multi-agent review later found it, plus nine
+more, in a single pass — and once the sandbox was fixed, the *same* Codex found six of them in one
+round, because it could finally execute.
+
+Two lessons worth keeping:
+
+- **A reviewer that cannot execute is a static reviewer wearing a verification badge**, and its
+  reassurance is worse than none, because it reads as evidence. Check the host once:
+  `unshare -U -r echo ok` must print `ok` (fix: `kernel.apparmor_restrict_unprivileged_userns=0`).
+- **Clean ≠ correct.** A single-reviewer pass reads the diff in isolation and is structurally blind
+  to bugs that only appear when you trace call paths across the codebase. Before a non-trivial PR,
+  run a multi-reviewer pass as well.
 - Keep this skill's files out of the diff you're reviewing — if the gate itself needs to change,
   do it in a separate, self-reviewed commit, never mid-cycle.
 - Pairs with, does not replace, the deterministic gates: Codex reviews correctness/security;
