@@ -72,8 +72,10 @@ Run as a capped loop; the script decides each gate, not your judgment.
      Then **re-review** (back to step 1).
    - **2 INFRA** → do not proceed and do not loop on it. Retry once; if it persists, surface the
      tail (rate limit? `codex login` expired? model gone?) and stop. An unrun review is not a pass.
-3. **Cap the rounds at 3.** If round 3 still returns blocking CRITICAL/IMPORTANT items, stop and
-   escalate the residual list to the human.
+3. **Cap the rounds at 6 (or clean, whichever comes first).** If round 6 still returns blocking
+   CRITICAL/IMPORTANT items, stop and escalate the residual list to the human. Don't re-run on an
+   unchanged diff: if the only remaining findings are ones the human has already reviewed and
+   accepted as residuals, that's the terminal state — record them as human-accepted and proceed.
 
 ## Notes
 
