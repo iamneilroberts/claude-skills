@@ -19,6 +19,22 @@ user_invocable: true
 Codex is the judge; the diff is the defendant. This session does not get to overrule a
 CRITICAL/IMPORTANT verdict.
 
+## Before you run: should you, and how hard?
+
+This tool assumes the review is *warranted now*. If that isn't obvious, run **`/review`** first —
+the orchestrator decides whether to review at all, at which gate, and sets the round budget, then
+dispatches here. Quick self-gate if you skip it:
+
+- **Plan/spec exists but little/no code** → review the plan (`--plan`), defer the diff review until
+  after build. Don't diff-review an empty tree.
+- **Trivial / docs-only / tests-only / mechanical rename** → don't review. Reviewing noise erodes
+  the signal of a real finding.
+- **Just applied a trivial/mechanical fix** → don't re-review; re-review only substantive change.
+
+Before reading any findings, **pre-commit the fix bar**: you will fix CRITICAL/IMPORTANT (a
+core-user-journey break, data loss, security, a privacy/cost leak) and **file** MINOR/NIT as issues
+rather than fixing them in-loop. Deciding the bar up front is what stops "one more round" creep.
+
 ## The five disciplines
 
 1. **Structured verdict** — Codex emits JSON against `sev.schema.json`, not prose. The gate is
@@ -72,10 +88,19 @@ Run as a capped loop; the script decides each gate, not your judgment.
      Then **re-review** (back to step 1).
    - **2 INFRA** → do not proceed and do not loop on it. Retry once; if it persists, surface the
      tail (rate limit? `codex login` expired? model gone?) and stop. An unrun review is not a pass.
-3. **Cap the rounds at 6 (or clean, whichever comes first).** If round 6 still returns blocking
-   CRITICAL/IMPORTANT items, stop and escalate the residual list to the human. Don't re-run on an
-   unchanged diff: if the only remaining findings are ones the human has already reviewed and
-   accepted as residuals, that's the terminal state — record them as human-accepted and proceed.
+3. **Round budget: set it from risk, extend only on convergence, backstop at 6.**
+   Don't default to "loop until clean." Set an initial budget (via `/review`, or: standard diff
+   **1**, elevated/multi-file **2**, high-risk auth/privacy/cost/data-loss **2–3**).
+   - **Converging** (round N's findings are the same blocking items, fewer/less severe) → you may
+     extend by **+1** with a one-line justification in the lane summary.
+   - **DEEPENING** (round 2+ surfaces *new, lower-severity* findings rather than confirming the
+     round-1 fixes) → **stop. Do not open another round.** New lower-severity findings each round is
+     a scope call for the human, not a convergence problem — escalate the residual.
+   - **Hard backstop 6, absolute.** If round 6 still returns blocking CRITICAL/IMPORTANT, stop and
+     escalate — more rounds past the cap degrade more than they fix.
+   Don't re-run on an unchanged diff. If the only remaining findings are ones the human has already
+   reviewed and accepted as residuals, that's the terminal state — record them as human-accepted
+   and proceed.
 
 ## Notes
 

@@ -7,6 +7,16 @@ description: Run multiple independent code reviewers (Codex + Gemini + a fresh C
 
 Delegate entirely to `review-panel.sh` — do not hand-run the reviewers or re-judge their verdicts.
 
+## When to use me (placement)
+
+The panel is the **pre-merge gate for a complex or elevated-risk diff** (auth/privacy/cost/
+data-loss/money/shared-contract) — three models are worth it when a mistake is asymmetric. It is
+**not** a per-task or after-every-change tool; running it on routine diffs burns tokens and trains
+you to skim findings. If the right timing/scope isn't obvious, run **`/review`** first — the
+orchestrator decides whether a panel is warranted vs a single `/codex-review` vs no review, sets
+the round budget, and dispatches here. Reserve the panel for **one** pass near merge,
+`--focus`-flagged at the actual risk.
+
 ## Invocation
 `/review-panel [--base <ref> | --staged | --plan <file>] [--reviewers codex,gemini,claude] [--block-at 0-3] [--focus "…" | --focus-file <f>] [--strict] [--out <path>]`
 
