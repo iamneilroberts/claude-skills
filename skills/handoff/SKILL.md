@@ -68,6 +68,7 @@ manually with `/session-resume`.
 **Repo:** {output of git rev-parse --show-toplevel}
 **Branch:** {branch}
 **Uncommitted changes:** {yes/no}
+**Stale if:** {1–4 mechanically checkable conditions that invalidate this handoff, pinned to exact refs — e.g. "main moves past {SHA}" · "PR #{N} merges" · "{path} changes" · "prod redeploys off {deploy-id}"}
 **Transcript:** {transcript_path if known, else "(current session)"}
 
 ## What Was Accomplished
@@ -114,11 +115,21 @@ section above (one TodoWrite entry per `- [ ]` unchecked item; mark `- [x]` item
 done or omit them) — if `docs/summaries/CHECKLIST.md` exists and is newer, prefer
 it. Then summarize the above for the user and run `git status` /
 `git branch --show-current` to confirm state matches this handoff (warn on any
-mismatch — different branch, unexpected changes). Present the rebuilt checklist +
-Remaining Work and ask whether to continue or do something else.
+mismatch — different branch, unexpected changes). **Evaluate each "Stale if"
+condition in the header**: if any holds, say which, treat the claims it covers as
+stale, and re-verify them against the live artifact before acting on them.
+Present the rebuilt checklist + Remaining Work and ask whether to continue or do
+something else.
 ```
 
    The `## Instructions` section is **required** — the `auto-resume.sh` hook rejects any handoff without it as "incomplete."
+
+   **Stale if** makes the handoff self-expiring (the "receipts" pattern from the r/ClaudeCode
+   "Verify, Don't Trust" thread): pin each condition to an exact ref from this session (a SHA,
+   PR #, path, deploy id) so the resume session can check it mechanically instead of trusting
+   the summary. Conditions should cover the claims most likely to rot — "prod is at X",
+   "branch Y is unmerged", "file Z looks like W". If nothing in the handoff can rot, write
+   `nothing — self-contained`.
 
 5. **Offer to commit it** (don't force): handoffs read from disk, so an uncommitted one auto-loads fine within the same worktree — but committing it (`git add <file> && git commit -m "docs(handoff): <topic>"`) makes it durable and visible to other worktrees. Ask: "Commit the handoff, or leave it uncommitted?"
 

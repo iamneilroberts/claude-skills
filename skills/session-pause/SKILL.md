@@ -38,6 +38,7 @@ Generate a detailed handoff file so a fresh session can pick up seamlessly.
 **Repo:** {output of `git rev-parse --show-toplevel`}
 **Branch:** {branch}
 **Uncommitted changes:** {yes/no}
+**Stale if:** {1–4 mechanically checkable conditions that invalidate this handoff, pinned to exact refs — e.g. "main moves past {SHA}" · "PR #{N} merges" · "{path} changes" · "prod redeploys off {deploy-id}"; write `nothing — self-contained` if it can't rot}
 
 ## What Was Accomplished
 1. {task} -> output at `{file path}`
@@ -74,7 +75,9 @@ Generate a detailed handoff file so a fresh session can pick up seamlessly.
 
 ## Instructions
 Continue the work from this session. Start with the Remaining Work section.
-Review git state to confirm nothing has changed since the handoff.
+Review git state to confirm nothing has changed since the handoff. Evaluate each
+"Stale if" condition in the header: if any holds, say which, treat the claims it
+covers as stale, and re-verify them against the live artifact before acting.
 ```
 
 4.5. **Curate the handoff.** If a `curator` agent is available (ships in this collection as `agents/curator.md`; check by attempting the dispatch, skip silently if not), dispatch it (Agent tool, `subagent_type: curator`) with the handoff file path. It verifies the handoff's claims against git/files/read-only checks and the repo's invariants doc, if any. Append its report to the handoff file under `## Curator Verification` (atomic write) — this catches confabulation before the next session trusts it.
