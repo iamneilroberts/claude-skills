@@ -1,0 +1,124 @@
+<!doctype html>
+<!--
+  /mock template — a single self-contained file hosting N design variations
+  behind a top view-switcher. No external CSS/JS/fonts/images: everything is
+  inline so the file works offline, as an email attachment, and at a public URL.
+
+  HOW TO USE THIS TEMPLATE
+  1. Set the document <title> and the .mock-title / .mock-sub text.
+  2. For each variation, add a <button class="vbtn" data-view="ID"> to .switcher
+     and a matching <section class="view" id="ID"> to .stage.
+  3. Put the actual mock markup inside each <section>. Scope any variation-
+     specific CSS under `#ID .selector` so variations can't bleed into each other.
+  4. The first .vbtn / .view should carry the `is-active` class.
+  The switcher JS at the bottom needs no editing — it toggles by data-view.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mock — REPLACE TITLE</title>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #fff; --ink: #1a1d23; --muted: #6b7280;
+    --line: #e5e7eb; --accent: #2563eb; --accent-ink: #fff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+  }
+  /* --- top bar: title + variation switcher ----------------------------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(15,17,21,.92); backdrop-filter: blur(6px);
+    color: #fff; padding: 14px 20px; display: flex; flex-wrap: wrap;
+    align-items: center; gap: 14px; border-bottom: 1px solid #222;
+  }
+  .mock-title { font-weight: 650; font-size: 15px; }
+  .mock-sub { color: #9aa3b2; font-size: 13px; }
+  .switcher { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+  .vbtn {
+    appearance: none; border: 1px solid #333; background: #1b1f27; color: #cbd5e1;
+    padding: 6px 13px; border-radius: 999px; font: inherit; font-size: 13px;
+    cursor: pointer; transition: .12s;
+  }
+  .vbtn:hover { border-color: #555; color: #fff; }
+  .vbtn.is-active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  /* --- stage: holds the variation panels ------------------------------- */
+  .stage { padding: 28px 20px 60px; }
+  .view { display: none; max-width: 960px; margin: 0 auto; }
+  .view.is-active { display: block; }
+  /* a neutral card the example variations render inside */
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  .note { color: #9aa3b2; font-size: 12px; text-align: center; margin-top: 28px; }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="mock-title">REPLACE TITLE</div>
+      <div class="mock-sub">REPLACE one-line description of what's being compared</div>
+    </div>
+    <nav class="switcher" role="tablist" aria-label="Design variations">
+      <button class="vbtn is-active" data-view="v1" role="tab">Variation A</button>
+      <button class="vbtn" data-view="v2" role="tab">Variation B</button>
+      <button class="vbtn" data-view="v3" role="tab">Variation C</button>
+    </nav>
+  </header>
+
+  <main class="stage">
+    <!-- VARIATION A ------------------------------------------------------ -->
+    <section class="view is-active" id="v1" role="tabpanel">
+      <div class="card">
+        <h2>Variation A</h2>
+        <p>Replace this with the first design. Scope custom CSS under <code>#v1</code>.</p>
+      </div>
+    </section>
+
+    <!-- VARIATION B ------------------------------------------------------ -->
+    <section class="view" id="v2" role="tabpanel">
+      <div class="card">
+        <h2>Variation B</h2>
+        <p>Replace this with the second design. Scope custom CSS under <code>#v2</code>.</p>
+      </div>
+    </section>
+
+    <!-- VARIATION C ------------------------------------------------------ -->
+    <section class="view" id="v3" role="tabpanel">
+      <div class="card">
+        <h2>Variation C</h2>
+        <p>Replace this with the third design. Scope custom CSS under <code>#v3</code>.</p>
+      </div>
+    </section>
+
+    <p class="note">Mockup — not a working build. Switch variations with the buttons above.</p>
+  </main>
+
+<script>
+  // View-switcher: show the panel whose id matches the clicked button's
+  // data-view, and reflect the choice in the URL hash (so a shared link can
+  // deep-link to a specific variation). No dependencies.
+  (function () {
+    var btns = Array.prototype.slice.call(document.querySelectorAll('.vbtn'));
+    var views = Array.prototype.slice.call(document.querySelectorAll('.view'));
+    function show(id) {
+      btns.forEach(function (b) { b.classList.toggle('is-active', b.dataset.view === id); });
+      views.forEach(function (v) { v.classList.toggle('is-active', v.id === id); });
+    }
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        show(b.dataset.view);
+        history.replaceState(null, '', '#' + b.dataset.view);
+      });
+    });
+    var initial = (location.hash || '').replace('#', '');
+    if (initial && document.getElementById(initial)) show(initial);
+  })();
+</script>
+</body>
+</html>

@@ -77,6 +77,7 @@ It lives in three places that reinforce each other:
 | [`codex-review`](skills/codex-review/SKILL.md) | Single-reviewer external pass (Codex) with a structured JSON verdict and mechanical gate. |
 | [`gemini-review`](skills/gemini-review/SKILL.md) | Single-reviewer external pass using the Gemini CLI, presented alongside your own analysis. |
 | [`unslop-ui`](skills/unslop-ui/SKILL.md) | Detect and remove the visual tells that make a UI look AI-generated. |
+| [`mock`](skills/mock/SKILL.md) | Build a few UI design variations as one self-contained HTML file behind a view-switcher, passed through the `unslop-ui` gate; deliver by download, email draft, or a URL if you wire your own host. |
 | [`my-voice`](skills/my-voice/SKILL.md) | Rewrite text to sound like a specific person: distill a checkable voice profile from a writing sample + a short interview, then de-slop the AI tells and verify the output against it. The prose counterpart to `unslop-ui`. |
 | [`task-observer`](skills/task-observer/SKILL.md) | Capture observations during work and turn them into skill improvements. *(third-party — see Attribution)* |
 
