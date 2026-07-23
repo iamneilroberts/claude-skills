@@ -20,7 +20,7 @@ file** holding several design variations behind a top view-switcher, then get it
 in front of someone. The whole point is speed and low ceremony: don't
 over-interview, infer sensible defaults and confirm in one pass.
 
-![Example: one file, three plan-picker layouts behind a view-switcher](assets/example.png)
+![Example: one file holding several ribbon-layout variations of a UI controls strip, behind a view-switcher](assets/example.png)
 
 *(The example above is what a finished mock looks like — one HTML file, the tabs
 top-right flip between variations. Everything is inline, so it renders the same
