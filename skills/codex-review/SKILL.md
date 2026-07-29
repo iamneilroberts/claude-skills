@@ -102,6 +102,14 @@ Run as a capped loop; the script decides each gate, not your judgment.
    reviewed and accepted as residuals, that's the terminal state — record them as human-accepted
    and proceed.
 
+## Reviewer ≠ instrument author
+
+A verification instrument (capture harness, differ, fixture generator) built by the same model
+whose work it gates must be independently audited before its verdicts count — enumerate what it
+does NOT capture (audience modes, uncovered modules, normalizations that mask drift). A real
+worker-built corpus harness once self-reported "zero divergences" while structurally blind to
+an entire audience firewall and a whole batch of peripheral modules.
+
 ## Notes
 
 - **workspace-write, not read-only.** Codex runs `-s workspace-write` so it can execute your

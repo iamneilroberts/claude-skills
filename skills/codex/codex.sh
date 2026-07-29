@@ -71,6 +71,24 @@ else
   run || run -m gpt-5.1-codex || { echo "codex.sh: codex exec failed (rate limit / auth / no model). Retry or pass -m <model>." >&2; exit 1; }
 fi
 
+
+# An exit-0 run with an empty final message is an INFRA FAILURE, never a result.
+# (Real incident: 23 min of honest Codex work discarded because the empty -o file
+# was indistinguishable from "no report".)
+if [[ ! -s "$LAST" ]]; then
+  echo "CODEX-INFRA: run exited 0 but produced an EMPTY final message." >&2
+  echo "Do NOT treat this as a completed task. The diff (if --write) is UNREVIEWED salvage." >&2
+  echo "Rollout for forensics: ~/.codex/sessions/$(date +%Y/%m/%d)/ (newest rollout-*.jsonl)" >&2
+  exit 3
+fi
+
+# Provenance: record which model actually ran (codex.sh pins nothing by default, so the
+# account default can drift between sessions).
+NEWEST_ROLLOUT="$(ls -t ~/.codex/sessions/$(date +%Y/%m/%d)/rollout-*.jsonl 2>/dev/null | head -1)"
+if [[ -n "$NEWEST_ROLLOUT" ]]; then
+  grep -m1 -o '"model"[^,}]*' "$NEWEST_ROLLOUT" >&2 || true
+fi
+
 cat "$LAST"
 
 # --stats: append token usage + an estimated API cost from the last turn.completed event.
