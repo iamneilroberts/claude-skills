@@ -20,6 +20,7 @@ consumes the short answer instead of the raw files. Install + provider config:
 | Would read 3+ files, or one file >~400 lines, to answer a question | `llm-ask <files...> -q "..."` — read the answer, not the files |
 | Need tests / fixtures / config scaffold / doc template from a spec | `llm-write -r <ref> -s "<spec>" -o <path>` — then review and edit; never trust blind |
 | Long transcript needs to become doc updates | `llm-extract <transcript.jsonl> --sections summary,decisions,todos` |
+| A mechanical step repeats ≥3× identically (same transform over many items) | Write a throwaway `scripts/<name>.sh` and run *that* — automate the repetition in code; don't spend model tokens re-prompting the same operation |
 
 ## Never delegate
 

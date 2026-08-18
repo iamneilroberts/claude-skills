@@ -61,7 +61,7 @@ It lives in three places that reinforce each other:
 | [`session-resume`](skills/session-resume/SKILL.md) | Find and load the newest handoff to resume work in place. |
 | [`pickup`](skills/pickup/SKILL.md) | Resume the newest handoff **in an isolated worktree** (orchestrates `branch` + `session-resume`). |
 | [`branch`](skills/branch/SKILL.md) | Create an isolated git worktree + a shared out-of-tree work journal, so parallel Claude sessions don't clobber each other's HEAD or WIP. |
-| [`curate`](skills/curate/SKILL.md) | Dispatch the read-only `curator` to verify a handoff/session's claims (confabulation check). |
+| [`curate`](skills/curate/SKILL.md) | Dispatch the read-only `curator` to verify a handoff/session's claims (confabulation check). Governing rule: **a state change you can't observe is an invalid transition** — every claim must point to a real artifact, not an exit-0. |
 | [`sitrep`](skills/sitrep/SKILL.md) | Occasional "state of the union" sweep: what actually shipped vs what handoffs/specs claim, plus loose ends and loss-risk. |
 | [`crisp`](skills/crisp/SKILL.md) | Shorter, denser responses on demand. |
 | [`idea`](skills/idea/SKILL.md) | Capture a fix/feature/research idea fast → a labelled GitHub Issue + a planning doc under `docs/ideas/`. |
@@ -72,7 +72,7 @@ It lives in three places that reinforce each other:
 | [`claude-code-best-practices`](skills/claude-code-best-practices/SKILL.md) | Routes questions to a local mirror of the Claude Code docs. |
 | [`evaluate`](skills/evaluate/SKILL.md) | Teardown a third-party product/repo from a URL; fan out read-only subagents; decide ADOPT / LIFT / SKIP. |
 | [`frontier-spend`](skills/frontier-spend/README.md) | Spend scarce/expiring premium-model access on durable judgment artifacts: adjudicate-don't-author, rationed audits, effort tuning, review-the-premium-output. Full write-up + A/B test in its README. |
-| [`llm-tools`](skills/llm-tools/SKILL.md) | Cheap-worker delegation: `llm-ask`/`llm-write`/`llm-extract` CLIs route bulk reads, boilerplate, and transcript compression to a cheap OpenAI-compatible model (Kimi/DeepSeek/OpenRouter/Ollama). Ships the full package. |
+| [`llm-tools`](skills/llm-tools/SKILL.md) | Cheap-worker delegation: `llm-ask`/`llm-write`/`llm-extract` CLIs route bulk reads, boilerplate, and transcript compression to a cheap OpenAI-compatible model (Kimi/DeepSeek/OpenRouter/Ollama). Also: automate ≥3× mechanical repetition with a script, not model tokens. Ships the full package. |
 | [`review-panel`](skills/review-panel/SKILL.md) | Multi-model code review (Codex + Gemini + a fresh Claude), merged with a consensus-gated challenge round and a pass/fail exit code. |
 | [`codex-review`](skills/codex-review/SKILL.md) | Single-reviewer external pass (Codex) with a structured JSON verdict and mechanical gate. |
 | [`gemini-review`](skills/gemini-review/SKILL.md) | Single-reviewer external pass using the Gemini CLI, presented alongside your own analysis. |

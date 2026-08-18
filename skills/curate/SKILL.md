@@ -39,6 +39,11 @@ work that only passed local smoke, stale audit claims treated as current.
    to `~/.claude/skill-observations/log.md` tagged to the relevant skill, so the pattern accumulates.
 
 ## Notes
+- **A state change you can't observe is an invalid transition.** Process success is not delivery
+  proof — an exit-0, a green check, or an "ok" message is not evidence that work happened. Every
+  claimed step should point to a concrete observable artifact: a diff, a written file, a passing
+  test's actual output, a live read. If the curator can't locate the artifact behind a claim, the
+  verdict is UNVERIFIED, not done — treat an unobservable transition as a lie until proven.
 - Read-only by contract: the curator never edits, deploys, or mutates any store. If you find
   yourself wanting it to "just fix" something, stop — that's a separate, explicit action the human
   approves.
