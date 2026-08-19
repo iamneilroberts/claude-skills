@@ -76,6 +76,7 @@ It lives in three places that reinforce each other:
 | [`review-panel`](skills/review-panel/SKILL.md) | Multi-model code review (Codex + Gemini + a fresh Claude), merged with a consensus-gated challenge round and a pass/fail exit code. |
 | [`codex-review`](skills/codex-review/SKILL.md) | Single-reviewer external pass (Codex) with a structured JSON verdict and mechanical gate. |
 | [`gemini-review`](skills/gemini-review/SKILL.md) | Single-reviewer external pass using the Gemini CLI, presented alongside your own analysis. |
+| [`persona-test`](skills/persona-test/SKILL.md) | Persona-based QA: run up to 10 persona-playing subagents against a **pluggable app adapter**, score each run with a Claude judge, and write results to a **pluggable sink** (local Markdown report by default; an optional HTTP POST sink for a dashboard). Adapter-driven (an app is just an adapter, never hardcoded); stdlib Python + Bash; the default suite makes **no** live calls (all gated behind `PERSONA_TEST_LIVE=1`), and an absent external driver (`codex`) is a clean skip. |
 | [`unslop-ui`](skills/unslop-ui/SKILL.md) | Detect and remove the visual tells that make a UI look AI-generated. |
 | [`mock`](skills/mock/SKILL.md) | Build a few UI design variations as one self-contained HTML file behind a view-switcher, passed through the `unslop-ui` gate; deliver by download, email draft, or a URL if you wire your own host. |
 | [`my-voice`](skills/my-voice/SKILL.md) | Rewrite text to sound like a specific person: distill a checkable voice profile from a writing sample + a short interview, then de-slop the AI tells and verify the output against it. The prose counterpart to `unslop-ui`. |
@@ -144,6 +145,11 @@ is absent.
   deploy/DB read commands and your project's invariants doc (e.g. a `LAWS.md`) if you keep one.
 - **External review CLIs** — `review-panel`, `codex-review`, and `gemini-review` shell out to the
   `codex`, `gemini`, and/or `claude` CLIs. An absent CLI is a clean skip, never a failure.
+- **`persona-test` drivers and sinks** — the persona drivers and judge run as Claude subscription
+  subagents (no API cost); an optional `codex` CLI adds one extra external persona-driver and is
+  skipped cleanly when absent. Its HTTP-POST sink needs only a target URL + a bearer token from an
+  env var; the bundled `example-http` adapter runs against any generic JSON app, and the `voygent`
+  adapter is included as a worked example.
 - **Memory / session-history MCP servers** — `sitrep`'s historical lane and `session-end`'s counters
   can use a long-term memory MCP and a session-history MCP if you run them; otherwise those lanes are
   skipped.
