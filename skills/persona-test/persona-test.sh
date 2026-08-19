@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 usage() {
   cat <<'EOF'
@@ -25,11 +24,11 @@ case "$MODE" in changes|issue|scenario) ;; *) echo "bad mode: $MODE" >&2; usage 
 while [ $# -gt 0 ]; do
   case "$1" in
     --help) usage; exit 0;;
-    --issue) ISSUE="${2:-}"; shift 2;;
-    --name) NAME="${2:-}"; shift 2;;
-    --n) N="${2:-}"; shift 2;;
-    --target) TARGET="${2:-}"; shift 2;;
-    --adapter) ADAPTER="${2:-}"; shift 2;;
+    --issue) [ $# -lt 2 ] && { echo "missing value for $1" >&2; usage >&2; exit 3; }; ISSUE="$2"; shift 2;;
+    --name) [ $# -lt 2 ] && { echo "missing value for $1" >&2; usage >&2; exit 3; }; NAME="$2"; shift 2;;
+    --n) [ $# -lt 2 ] && { echo "missing value for $1" >&2; usage >&2; exit 3; }; N="$2"; shift 2;;
+    --target) [ $# -lt 2 ] && { echo "missing value for $1" >&2; usage >&2; exit 3; }; TARGET="$2"; shift 2;;
+    --adapter) [ $# -lt 2 ] && { echo "missing value for $1" >&2; usage >&2; exit 3; }; ADAPTER="$2"; shift 2;;
     *) echo "unknown flag: $1" >&2; usage >&2; exit 3;;
   esac
 done

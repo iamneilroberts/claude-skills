@@ -8,6 +8,7 @@ run --help >/dev/null 2>&1 || { echo "FAIL: --help should exit 0"; fail=1; }
 run --bogus-flag >/dev/null 2>&1; [ $? -eq 3 ] || { echo "FAIL: bad flag should exit 3"; fail=1; }
 run notamode >/dev/null 2>&1; [ $? -eq 3 ] || { echo "FAIL: bad mode should exit 3"; fail=1; }
 run scenario --n 99 >/dev/null 2>&1; [ $? -eq 3 ] || { echo "FAIL: n>10 should exit 3"; fail=1; }
+run --n >/dev/null 2>&1; [ $? -eq 3 ] || { echo "FAIL: --n with no value should exit 3"; fail=1; }
 
 # Python unit suite must pass.
 ( cd "$DIR/tests" && python3 -m unittest -v ) || { echo "FAIL: python unit suite"; fail=1; }
