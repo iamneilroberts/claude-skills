@@ -8,3 +8,5 @@ __pycache__/
 skill-observations/
 *.log
 .DS_Store
+skills/persona-test/runs/*
+!skills/persona-test/runs/.gitkeep
