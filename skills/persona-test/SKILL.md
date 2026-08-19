@@ -27,11 +27,14 @@ adapter directory the run selects (`adapters/<name>/`, contract documented in
 ### 1. Parse launch intent
 
 Run `persona-test.sh` with the invocation's arguments (mode positional, `--issue`, `--name`,
-`--n`, `--target`, `--adapter`). It validates and prints the resolved plan line
-(`mode=... n=... adapter=... target=... issue=... name=...`); exit 0 on success, exit 3 on
-any malformed input (bad mode, bad flag, `--n` out of 1–10, a value-taking flag with no
-value), exit 0 with usage text for `--help`. Read MODE, N, ADAPTER, TARGET, ISSUE, NAME off
-that line — these six values drive every following step.
+`--n`, `--target`, `--adapter`, `--min-model`, `--max-model`). It validates and prints the
+resolved plan line
+(`mode=... n=... adapter=... target=... issue=... name=... min_model=... max_model=...`); exit
+0 on success, exit 3 on any malformed input (bad mode, bad flag, `--n` out of 1–10, a
+model outside `haiku|sonnet|opus`, `min_model` above `max_model`, a value-taking flag with no
+value), exit 0 with usage text for `--help`. Read MODE, N, ADAPTER, TARGET, ISSUE, NAME,
+MIN_MODEL, MAX_MODEL off that line — these values drive every following step (MIN_MODEL /
+MAX_MODEL are `none` when unset; they bound step 4's per-subagent model choice).
 
 ### 2. Load adapter + personas
 
@@ -70,6 +73,18 @@ role-plays that persona through the app via the reach hook, stopping per the don
 returns one JSON run record. Validate every returned record immediately against
 `lib/schema.py`'s `validate_run_record` — a record that fails validation is **dropped** from
 the run (never retried, never patched to fit) and counted separately in the final summary.
+
+**Pick each subagent's model by how hard its (persona, scenario) is to role-play, then clamp
+to `[MIN_MODEL, MAX_MODEL]`.** Default judgment (both `none`): a happy-path persona whose job
+is to walk the obvious flow runs on a cheaper tier (haiku/sonnet); an adversarial or
+detail-sensitive persona — the skeptic probing consequences, the power-user hunting silently
+dropped params, the accessibility-first reader judging whether output survives being read
+aloud — warrants a stronger tier (sonnet/opus) because the finding quality depends on it
+noticing subtle failures. Then apply the bounds: `MIN_MODEL` is a floor (never dispatch below
+it), `MAX_MODEL` a ceiling (never above it); when they are equal, every subagent runs that one
+tier; when a set bound clamps a choice, use the bound. Pin the resolved model explicitly on
+every dispatch — never let a subagent inherit the caller's model. The external `codex` driver
+(below) is a fixed second-model perspective and is **not** subject to these bounds.
 
 **Hard cap: never dispatch more than 10 persona subagents in one run**, regardless of how
 large N × scenario-count computes to — `persona-test.sh` already rejects `--n` above 10, but
