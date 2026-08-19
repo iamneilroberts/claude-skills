@@ -24,5 +24,33 @@ class TestRunRecord(unittest.TestCase):
         self.assertTrue(any("scores" in e for e in errs))
         self.assertTrue(any("verdict" in e for e in errs))
 
+    def test_judged_result_bad_severity_reports_error(self):
+        payload = {
+            "personaId": "p1",
+            "scenario": "book a stay",
+            "scores": {},
+            "verdict": "pass",
+            "severity": "catastrophic",
+            "rationale": "looks fine",
+        }
+        errs = schema.validate_judged_result(payload)
+        self.assertTrue(any("severity" in e for e in errs))
+
+        del payload["severity"]
+        errs = schema.validate_judged_result(payload)
+        self.assertTrue(any("severity" in e for e in errs))
+
+    def test_judged_result_non_dict_scores_reports_error(self):
+        payload = {
+            "personaId": "p1",
+            "scenario": "book a stay",
+            "scores": [],
+            "verdict": "pass",
+            "severity": "none",
+            "rationale": "looks fine",
+        }
+        errs = schema.validate_judged_result(payload)
+        self.assertTrue(any("scores" in e for e in errs))
+
 if __name__ == "__main__":
     unittest.main()
