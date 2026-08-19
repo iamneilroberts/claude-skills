@@ -1,5 +1,7 @@
 """Default sink: render judged results to a Markdown report under a runs dir."""
 import json, os
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lib"))
 
 def render(results, summary):
     lines = ["# Persona-test run report", "",

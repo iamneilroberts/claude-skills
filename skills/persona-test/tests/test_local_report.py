@@ -23,5 +23,19 @@ class TestLocalReport(unittest.TestCase):
             self.assertTrue(os.path.exists(path))
             self.assertIn("run-123", path)
 
+    def test_write_resolves_aggregate_without_lib_on_syspath(self):
+        import subprocess, sys, tempfile, os, json
+        SINKS = os.path.join(HERE, "..", "sinks")
+        with tempfile.TemporaryDirectory() as d:
+            script = (
+                "import sys, json; sys.path.insert(0, %r);\n"
+                "import local_report;\n"
+                "p = local_report.write([], %r, 'run-x');\n"
+                "print(p)" % (SINKS, d)
+            )
+            out = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True)
+            self.assertEqual(out.returncode, 0, out.stderr)
+            self.assertIn("run-x", out.stdout)
+
 if __name__ == "__main__":
     unittest.main()
