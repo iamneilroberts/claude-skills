@@ -1,0 +1,10 @@
+{
+  "personaId": "budget-traveler",
+  "personaSource": "library",
+  "scenario": "book a 3-night stay under budget",
+  "mode": "scenario",
+  "steps": [{"intent": "search hotels", "appResponse": "3 results", "note": ""}],
+  "completed": true,
+  "observations": ["prices shown without taxes"],
+  "suspectedIssues": [{"summary": "tax not shown", "severity": "minor"}]
+}
