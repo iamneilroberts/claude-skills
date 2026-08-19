@@ -3,7 +3,9 @@
 This is the **reference adapter** — a working example against a plain HTTP JSON app, written
 to document the adapter contract for anyone building a new one. It targets a fictional "Notes
 API" (`POST /api/notes` to create a note, `GET /api/notes?q=` to search). Copy this file's
-structure, not its literal endpoints, when writing a real adapter.
+structure, not its literal endpoints, when writing a real adapter. **If your app isn't a
+plain HTTP JSON API** — a server-rendered HTML site, a Node.js app, a Playwright-driven
+browser app, a CLI — read `adapters/AUTHORING.md`: it has a `reach/interact` recipe per stack.
 
 An adapter is a directory at `adapters/<name>/` containing at minimum this file,
 `adapter.md`. It may also contain adapter-specific code (e.g. a `map_to_board.py`-style
