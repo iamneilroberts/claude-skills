@@ -91,13 +91,23 @@ subagent's raw JSON and run it through `lib/normalize.py`'s `normalize_judged` b
 anywhere downstream — never consume a judge's raw output directly, always through the
 normalizer, so a malformed or partial judge response still yields a well-shaped result.
 
+If the loaded adapter declares a judge-dimensions override, call `normalize_judged(raw,
+dimensions=<the adapter's dimensions>)` — passing the adapter's own dimension tuple, not the
+normalizer's default — so the adapter's scores survive normalization instead of being zeroed
+out under dimension keys the judge never populated. If the adapter also declares extra
+judged-result fields beyond `normalize_judged`'s fixed output shape (`personaId, scenario,
+scores, verdict, severity, rationale, suspectedIssues`), merge those extra fields from the raw
+judge JSON back onto the normalized result before step 6, so nothing the adapter needs
+downstream gets dropped by normalization.
+
 ### 6. Aggregate and report
 
 Feed every normalized judged result through `lib/aggregate.py`'s `summarize`. **Always** write
 the local report via `sinks/local_report.py`'s `write(results, runs_dir, run_id)` — this
 happens unconditionally, before any adapter sink is attempted, and is never rolled back by
 anything that follows. Then, only if the loaded adapter declares a sink, run it: map the
-judged results through the adapter's own mapper if it has one, then post with
+results from step 5 — carrying both the adapter's own-dimension scores and any adapter-declared
+extra fields — through the adapter's own mapper if it has one, then post with
 `sinks/http_post.py`. A sink failure (network error, missing route, bad auth) does not
 invalidate or roll back the already-written local report — surface the failure alongside the
 summary, do not fail the whole `/persona-test` run over it.

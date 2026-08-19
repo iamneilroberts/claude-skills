@@ -58,9 +58,16 @@ Voygent's judge subagent scores against **board dimensions**, not the rubric def
 - `funnel` (0–5) — did the app move the persona toward a concrete, bookable outcome rather
   than stalling in open-ended chat?
 
-Plus three fields the judge adds to the standard judged-result shape for this adapter (not
-part of `lib/normalize.py`'s generic shape — carried through unnormalized to the board
-mapper):
+Per `SKILL.md` step 5, the voygent path normalizes each judge's raw output with
+`normalize_judged(raw, dimensions=("comprehension", "elicitation", "free_surface", "funnel"))`
+— the board dimensions, not `lib/normalize.py`'s three defaults — so the board scores survive
+normalization instead of coming back zeroed.
+
+Plus three fields the judge adds to the standard judged-result shape for this adapter, not
+part of `lib/normalize.py`'s fixed output keys. Per `SKILL.md` step 5, these are preserved from
+the raw judge JSON onto the normalized result before step 6, so `map_to_board.py`'s `_row` —
+which reads all three directly off each result — still sees them instead of falling back to
+its 0/False/"unknown" defaults:
 
 - `fabricationCount` (int ≥ 0) — number of times the app stated something as fact that the
   run record shows was false or unverifiable (a price that didn't match, a policy invented on
@@ -79,6 +86,10 @@ active dimensions), substituting `funnel` for `task_completion` and `comprehensi
 verdict = "pass"  if  funnel >= 3  AND  comprehension != 0
 verdict = "fail"  otherwise
 ```
+
+Caveat: this threshold is inferred by analogy to `rubric.md`'s default formula, not derived
+from a real judged run — it has not yet been validated against actual Voygent persona-test
+output.
 
 ## Sink: board ingest
 

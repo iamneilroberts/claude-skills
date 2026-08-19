@@ -18,5 +18,11 @@ class TestAggregate(unittest.TestCase):
         s = aggregate.summarize(load())
         self.assertEqual(s["worst_severity"], "blocker")
 
+    def test_by_scenario_groups_verdicts_per_scenario(self):
+        s = aggregate.summarize(load())
+        self.assertEqual(s["by_scenario"],
+                          {"book under budget": ["pass"],
+                           "multi-city itinerary": ["fail"]})
+
 if __name__ == "__main__":
     unittest.main()
