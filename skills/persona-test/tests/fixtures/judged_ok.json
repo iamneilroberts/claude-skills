@@ -1,0 +1,9 @@
+[
+  {"personaId": "budget-traveler", "scenario": "book under budget",
+   "scores": {"task_completion": 5, "correctness": 5, "ux_friction": 4},
+   "verdict": "pass", "severity": "none", "rationale": "smooth", "suspectedIssues": []},
+  {"personaId": "power-user", "scenario": "multi-city itinerary",
+   "scores": {"task_completion": 1, "correctness": 2, "ux_friction": 1},
+   "verdict": "fail", "severity": "blocker", "rationale": "crashed on step 3",
+   "suspectedIssues": [{"summary": "500 on multi-city", "severity": "blocker"}]}
+]
