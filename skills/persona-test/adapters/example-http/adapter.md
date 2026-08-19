@@ -6,8 +6,8 @@ API" (`POST /api/notes` to create a note, `GET /api/notes?q=` to search). Copy t
 structure, not its literal endpoints, when writing a real adapter.
 
 An adapter is a directory at `adapters/<name>/` containing at minimum this file,
-`adapter.md`. It may also contain adapter-specific code (a mapper, like
-`adapters/voygent/map_to_board.py`) if its sink needs one. Everything an adapter declares is
+`adapter.md`. It may also contain adapter-specific code (e.g. a `map_to_board.py`-style
+mapper) if its sink needs one. Everything an adapter declares is
 consumed by `SKILL.md` and by the persona/judge subagents it dispatches — an adapter is pure
 declaration, never itself imported by `lib/`.
 
@@ -86,7 +86,9 @@ did would declare it like:
 judge_dimensions: task_completion, correctness, data_integrity
 ```
 
-(`data_integrity` illustrative only — see `adapters/voygent/adapter.md` for a real override.)
+The judge subagent then scores exactly the dimensions the adapter names (each 0–5), in place
+of the rubric defaults; `lib/normalize.py` preserves them when called with `dimensions=<those
+dimensions>`. (`data_integrity` is illustrative.)
 
 ### Pass threshold override
 
@@ -97,9 +99,11 @@ Not used by this adapter.
 
 Beyond the local report (`sinks/local_report.py`), which `SKILL.md` always writes, an adapter
 may declare an additional sink that posts the aggregated results somewhere else — typically
-`sinks/http_post.py` against an endpoint, optionally through an adapter-owned mapper (like
-`adapters/voygent/map_to_board.py`) that reshapes the judged results into that endpoint's
-body first. This adapter has no external system to report to, so it declares none — the local
+`sinks/http_post.py` against an endpoint, optionally through an adapter-owned mapper module
+(under `adapters/<name>/`) that reshapes the judged results into that endpoint's body first
+(so the mapper owns the endpoint's exact contract, and any adapter-specific extra fields it
+needs are preserved onto the results before the POST). This adapter has no external system to
+report to, so it declares none — the local
 Markdown report under `runs/<run_id>/report.md` is the only output.
 
 ## Env vars

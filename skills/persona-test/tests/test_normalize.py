@@ -29,9 +29,10 @@ class TestNormalize(unittest.TestCase):
         self.assertEqual(out["scores"]["task_completion"], 0)
 
     def test_dimensions_override_preserves_adapter_scores(self):
-        # Locks the normalize<->adapter-dimensions seam: an adapter (e.g. voygent) that
-        # overrides judge dimensions must get its non-default scores back intact, not
-        # zeroed under DEFAULT_DIMENSIONS keys the judge never populated.
+        # Locks the normalize<->adapter-dimensions seam: an adapter that scores in
+        # board-style dimensions and overrides the judge dimensions must get its
+        # non-default scores back intact, not zeroed under DEFAULT_DIMENSIONS keys
+        # the judge never populated.
         board_dims = ("comprehension", "elicitation", "free_surface", "funnel")
         raw = {"personaId": "p1", "scenario": "s",
                "scores": {"comprehension": 4, "elicitation": 3,

@@ -148,8 +148,9 @@ is absent.
 - **`persona-test` drivers and sinks** — the persona drivers and judge run as Claude subscription
   subagents (no API cost); an optional `codex` CLI adds one extra external persona-driver and is
   skipped cleanly when absent. Its HTTP-POST sink needs only a target URL + a bearer token from an
-  env var; the bundled `example-http` adapter runs against any generic JSON app, and the `voygent`
-  adapter is included as a worked example.
+  env var; the bundled `example-http` adapter is a complete worked example against a generic
+  JSON app, and documents the adapter contract (three hooks + optional dimension/threshold/sink
+  overrides) for building your own.
 - **Memory / session-history MCP servers** — `sitrep`'s historical lane and `session-end`'s counters
   can use a long-term memory MCP and a session-history MCP if you run them; otherwise those lanes are
   skipped.
