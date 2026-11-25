@@ -109,13 +109,18 @@ Reddit is worth calling out because the obvious approaches don't work anymore:
 - **Plain fetch gets a 403.** Reddit returns an anti-bot page to any non-browser client —
   `.json` endpoints, `old.reddit.com`, UA spoofing, and reader proxies all fail, from both
   datacenter and residential IPs.
+- **The `.json` endpoint is closed even to a browser** (seen 2026-11). An in-page same-origin
+  fetch of the post JSON, which this skill used to rely on, now returns 403 too.
+- **Headless browsers are fingerprinted by user agent.** A user agent naming `HeadlessChrome`,
+  or a Chrome version other than the one actually running, gets 403.
 
-The one path left is a **real browser session**: `get-reddit` launches Chromium (via Playwright),
-parks on the post to warm the session, then does an in-page same-origin fetch of the post JSON —
-the browser carries the cookies and headers Node's fetch can't replicate. No Reddit login or API
-key needed. Playwright and its Chromium binary auto-install on first run; `node_modules/` and the
-browser profile are gitignored, so only the small source (`get-reddit.sh`, `get-reddit.mjs`,
-`package.json`) is tracked here.
+The one path left is **reading the rendered page in real Chrome**: `get-reddit` launches the
+system Chrome (via Playwright Core) in its new headless mode, sets the user agent to the installed
+Chrome's true version, opens the thread sorted by top, and reads the post and top-level comments
+from the page. Share links (`reddit.com/r/<sub>/s/<token>`) work as well as post URLs and IDs. No
+Reddit login or API key needed. Setup is an explicit one-time `scripts/setup.sh` (installs
+Playwright Core only, no browser download); `node_modules/` and the lockfile are gitignored, so
+only the small source (`scripts/`, `package.json`, `SKILL.md`) is tracked here.
 
 ## Install
 
