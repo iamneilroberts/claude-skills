@@ -115,13 +115,21 @@ async function fetchThread() {
     if (!hasPost) return { status, error: 'page loaded without a post element' };
     await page.waitForSelector('shreddit-comment', { timeout: 10_000 }).catch(() => {});
 
-    // Top-level comments beyond the first batch sit behind a "view more" partial.
-    for (let round = 0; round < 8; round += 1) {
+    // More top-level comments come from a "more-comments" partial outside any comment.
+    // The first one loads when scrolled into view; later ones need their button clicked.
+    for (let round = 0; round < 30; round += 1) {
       const count = await page.locator('shreddit-comment[depth="0"]').count();
       if (count >= limit) break;
-      const more = page.locator('shreddit-comment-tree > faceplate-partial button').first();
-      if (!(await more.count())) break;
-      await more.click({ timeout: 5_000 }).catch(() => {});
+      const found = await page.evaluate(() => {
+        const more = [...document.querySelectorAll('faceplate-partial[src*="more-comments"]')].find(
+          (element) => !element.closest('shreddit-comment'),
+        );
+        if (!more) return false;
+        more.scrollIntoView({ block: 'center' });
+        more.querySelector('button')?.click();
+        return true;
+      });
+      if (!found) break;
       await page
         .waitForFunction(
           (before) => document.querySelectorAll('shreddit-comment[depth="0"]').length > before,
