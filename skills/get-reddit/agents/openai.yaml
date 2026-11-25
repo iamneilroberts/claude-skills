@@ -1,0 +1,4 @@
+interface:
+  display_name: "Get Reddit"
+  short_description: "Fetch a Reddit thread with useful comments"
+  default_prompt: "Use $get-reddit to fetch this Reddit thread, preserve practitioner evidence, and surface idea signals."
